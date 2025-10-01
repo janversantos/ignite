@@ -33,11 +33,15 @@ interface Song {
   originalKey?: string
   defaultKey?: string
   artist?: string
-  tempo?: string
-  language?: string
-  chordSections?: Array<{
-    section: string
-    content: string
+  songType?: string  // "Upbeat", "Slow", "Moderate"
+  language?: string  // "English", "Tagalog", etc.
+  sections?: Array<{
+    id: string
+    name: string
+    order: number
+    chords: string
+    snippet?: string
+    notes?: string
   }>
   worshipLeaders?: Array<{
     name: string
@@ -195,12 +199,12 @@ export default function ServiceDetailPage() {
     })
   }
 
-  const getTempoIcon = (tempo?: string) => {
-    if (!tempo) return null
-    const tempoLower = tempo.toLowerCase()
-    if (tempoLower.includes('fast') || tempoLower.includes('upbeat')) {
+  const getTempoIcon = (songType?: string) => {
+    if (!songType) return null
+    const typeLower = songType.toLowerCase()
+    if (typeLower.includes('fast') || typeLower.includes('upbeat')) {
       return <Zap className="w-4 h-4 text-orange-500" title="Upbeat" />
-    } else if (tempoLower.includes('slow') || tempoLower.includes('ballad')) {
+    } else if (typeLower.includes('slow') || typeLower.includes('ballad')) {
       return <Heart className="w-4 h-4 text-blue-500" title="Slow" />
     } else {
       return <Wind className="w-4 h-4 text-green-500" title="Moderate" />
@@ -208,16 +212,15 @@ export default function ServiceDetailPage() {
   }
 
   const getChordProgression = (song: Song) => {
-    if (!song.chordSections || song.chordSections.length === 0) return null
+    if (!song.sections || song.sections.length === 0) return null
 
-    // Extract just chord names from each section (simplified view)
-    return song.chordSections.map(section => {
-      const chords = section.content
-        .split('\n')
-        .filter(line => line.trim() && !line.includes('|'))
-        .join(' ')
-      return { section: section.section, chords }
-    })
+    // Extract chord progressions from sections (simplified view)
+    return song.sections
+      .filter(section => section.chords && section.chords.trim())
+      .map(section => ({
+        section: section.name,
+        chords: section.chords
+      }))
   }
 
   if (loading) {
@@ -439,10 +442,10 @@ export default function ServiceDetailPage() {
                           </span>
 
                           {/* Tempo Badge */}
-                          {song.tempo && (
+                          {song.songType && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md">
-                              {getTempoIcon(song.tempo)}
-                              <span>{song.tempo}</span>
+                              {getTempoIcon(song.songType)}
+                              <span>{song.songType}</span>
                             </span>
                           )}
 
