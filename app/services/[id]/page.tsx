@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Calendar, Clock, User, Plus, Trash2, ChevronUp, ChevronDown, Music, Edit2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, User, Plus, Trash2, ChevronUp, ChevronDown, Music, Edit2, ChevronRight, Zap, Wind, Heart } from 'lucide-react'
 import { SupabaseService } from '@/lib/supabase'
 import { SongsService } from '@/lib/songsData'
 import { AddSongToServiceModal } from '@/components/AddSongToServiceModal'
@@ -33,6 +33,16 @@ interface Song {
   originalKey?: string
   defaultKey?: string
   artist?: string
+  tempo?: string
+  language?: string
+  chordSections?: Array<{
+    section: string
+    content: string
+  }>
+  worshipLeaders?: Array<{
+    name: string
+    preferredKey: string
+  }>
 }
 
 export default function ServiceDetailPage() {
@@ -46,6 +56,7 @@ export default function ServiceDetailPage() {
   const [showAddSongModal, setShowAddSongModal] = useState(false)
   const [isEditingService, setIsEditingService] = useState(false)
   const [editedService, setEditedService] = useState<Service | null>(null)
+  const [expandedSongIds, setExpandedSongIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadService()
@@ -170,6 +181,43 @@ export default function ServiceDetailPage() {
   const handleCancelEdit = () => {
     setEditedService(null)
     setIsEditingService(false)
+  }
+
+  const toggleSongExpanded = (songId: string) => {
+    setExpandedSongIds(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(songId)) {
+        newSet.delete(songId)
+      } else {
+        newSet.add(songId)
+      }
+      return newSet
+    })
+  }
+
+  const getTempoIcon = (tempo?: string) => {
+    if (!tempo) return null
+    const tempoLower = tempo.toLowerCase()
+    if (tempoLower.includes('fast') || tempoLower.includes('upbeat')) {
+      return <Zap className="w-4 h-4 text-orange-500" title="Upbeat" />
+    } else if (tempoLower.includes('slow') || tempoLower.includes('ballad')) {
+      return <Heart className="w-4 h-4 text-blue-500" title="Slow" />
+    } else {
+      return <Wind className="w-4 h-4 text-green-500" title="Moderate" />
+    }
+  }
+
+  const getChordProgression = (song: Song) => {
+    if (!song.chordSections || song.chordSections.length === 0) return null
+
+    // Extract just chord names from each section (simplified view)
+    return song.chordSections.map(section => {
+      const chords = section.content
+        .split('\n')
+        .filter(line => line.trim() && !line.includes('|'))
+        .join(' ')
+      return { section: section.section, chords }
+    })
   }
 
   if (loading) {
@@ -349,80 +397,178 @@ export default function ServiceDetailPage() {
             </button>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {serviceSongs.map((serviceSong, index) => {
               const song = getSongDetails(serviceSong.song_id)
               if (!song) return null
 
               const displayKey = serviceSong.key || song.originalKey || song.defaultKey || 'Unknown'
+              const isExpanded = expandedSongIds.has(serviceSong.id)
+              const chordProgression = getChordProgression(song)
 
               return (
                 <div
                   key={serviceSong.id}
-                  className="group flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden"
                 >
-                  {/* Order Number */}
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                    <span className="text-sm font-bold text-primary-600 dark:text-primary-400">
-                      {index + 1}
-                    </span>
-                  </div>
+                  {/* Main Song Card */}
+                  <div className="p-4 md:p-5">
+                    {/* Header Row */}
+                    <div className="flex items-start gap-3 mb-3">
+                      {/* Order Number */}
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                        <span className="text-lg font-bold text-primary-600 dark:text-primary-400">
+                          {index + 1}
+                        </span>
+                      </div>
 
-                  {/* Song Info - Clickable */}
-                  <div
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => router.push(`/songs/${song.id}`)}
-                  >
-                    <h3 className="font-semibold text-gray-900 dark:text-white truncate hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                      {song.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      <span>Key: {displayKey}</span>
-                      {song.artist && <span>• {song.artist}</span>}
-                      {serviceSong.notes && <span>• {serviceSong.notes}</span>}
+                      {/* Song Title & Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3
+                          className="text-xl font-bold text-gray-900 dark:text-white cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors mb-2"
+                          onClick={() => router.push(`/songs/${song.id}`)}
+                        >
+                          {song.title}
+                        </h3>
+
+                        {/* Metadata Badges */}
+                        <div className="flex flex-wrap items-center gap-2 text-sm">
+                          {/* Key Badge */}
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 rounded-md font-semibold">
+                            🎵 {displayKey}
+                          </span>
+
+                          {/* Tempo Badge */}
+                          {song.tempo && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md">
+                              {getTempoIcon(song.tempo)}
+                              <span>{song.tempo}</span>
+                            </span>
+                          )}
+
+                          {/* Language Badge */}
+                          {song.language && (
+                            <span className="inline-flex items-center px-2.5 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-md">
+                              {song.language === 'English' ? '🇬🇧' : '🇵🇭'} {song.language}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Artist */}
+                        {song.artist && (
+                          <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                            • {song.artist}
+                          </p>
+                        )}
+
+                        {/* Service Notes */}
+                        {serviceSong.notes && (
+                          <p className="mt-2 text-gray-700 dark:text-gray-300 text-sm italic">
+                            📌 {serviceSong.notes}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Reorder Buttons (Desktop) */}
+                      <div className="hidden md:flex flex-col gap-1">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleMoveUp(index); }}
+                          disabled={index === 0}
+                          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          title="Move up"
+                        >
+                          <ChevronUp className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleMoveDown(index); }}
+                          disabled={index === serviceSongs.length - 1}
+                          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          title="Move down"
+                        >
+                          <ChevronDown className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons Row */}
+                    <div className="flex flex-wrap items-center gap-2 mt-4">
+                      {/* Expand Chords Button */}
+                      {chordProgression && chordProgression.length > 0 && (
+                        <button
+                          onClick={() => toggleSongExpanded(serviceSong.id)}
+                          className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors font-medium"
+                        >
+                          <Music className="w-4 h-4" />
+                          {isExpanded ? 'Hide Chords' : 'Show Chords'}
+                          <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                      )}
+
+                      {/* Mobile Reorder Buttons */}
+                      <div className="flex md:hidden gap-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleMoveUp(index); }}
+                          disabled={index === 0}
+                          className="px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                          title="Move up"
+                        >
+                          <ChevronUp className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleMoveDown(index); }}
+                          disabled={index === serviceSongs.length - 1}
+                          className="px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                          title="Move down"
+                        >
+                          <ChevronDown className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Edit & Delete Buttons */}
+                      <div className="flex gap-2 ml-auto">
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors min-h-[44px]"
+                          title="Edit key/notes"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleRemoveSong(serviceSong.id); }}
+                          className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors min-h-[44px]"
+                          title="Remove song"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Actions - Always visible */}
-                  <div className="flex items-center gap-1">
-                    {/* Move Up */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleMoveUp(index); }}
-                      disabled={index === 0}
-                      className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title="Move up"
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </button>
+                  {/* Expanded Chords Section */}
+                  {isExpanded && chordProgression && (
+                    <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4">
+                      <div className="space-y-3">
+                        {chordProgression.map((section, idx) => (
+                          <div key={idx}>
+                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                              {section.section}:
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                              {section.chords}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
 
-                    {/* Move Down */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleMoveDown(index); }}
-                      disabled={index === serviceSongs.length - 1}
-                      className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title="Move down"
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-
-                    {/* Edit Key/Notes (TODO) */}
-                    <button
-                      onClick={(e) => e.stopPropagation()}
-                      className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      title="Edit key/notes"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-
-                    {/* Remove */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleRemoveSong(serviceSong.id); }}
-                      className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                      title="Remove song"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                      <button
+                        onClick={() => router.push(`/songs/${song.id}`)}
+                        className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+                      >
+                        View Full Song
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )
             })}
