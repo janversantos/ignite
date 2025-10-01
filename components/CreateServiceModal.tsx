@@ -39,9 +39,10 @@ export function CreateServiceModal({ onClose, onServiceCreated }: CreateServiceM
 
       onServiceCreated()
       onClose()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating service:', error)
-      alert('Failed to create service. Make sure Supabase is configured.')
+      const errorMessage = error?.message || error?.toString() || 'Unknown error'
+      alert(`Failed to create service: ${errorMessage}`)
     } finally {
       setCreating(false)
     }
