@@ -315,7 +315,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "songType": "Upbeat"
+      "songType": "Upbeat",
+      "language": "English"
     },
     {
       "id": "2",
@@ -408,7 +409,9 @@
           "snippet": "Worthy, Worthy",
           "notes": ""
         }
-      ]
+      ],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "3",
@@ -428,7 +431,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "songType": "Upbeat"
+      "songType": "Upbeat",
+      "language": "English"
     },
     {
       "id": "4",
@@ -447,7 +451,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Slow"
     },
     {
       "id": "5",
@@ -466,7 +472,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "6",
@@ -485,7 +493,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "7",
@@ -504,7 +514,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "8",
@@ -523,7 +535,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "9",
@@ -542,7 +556,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Upbeat"
     },
     {
       "id": "10",
@@ -561,7 +577,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "11",
@@ -632,7 +650,9 @@
           "snippet": "He is Lord, Lord of all",
           "notes": "Build to climax, repeat 2-4x"
         }
-      ]
+      ],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "12",
@@ -652,7 +672,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "13",
@@ -676,7 +697,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "14",
@@ -695,7 +717,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Upbeat"
     },
     {
       "id": "15",
@@ -718,7 +742,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "16",
@@ -741,7 +767,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "17",
@@ -760,7 +788,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "18",
@@ -779,7 +809,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "19",
@@ -798,7 +830,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "20",
@@ -817,7 +851,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "21",
@@ -836,7 +872,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "22",
@@ -855,7 +893,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "23",
@@ -874,7 +914,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "24",
@@ -928,7 +970,9 @@
           "snippet": "Your goodness is running after... (all my days)",
           "notes": "Climactic moment, repeat 2x"
         }
-      ]
+      ],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "25",
@@ -947,7 +991,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "26",
@@ -966,7 +1012,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Upbeat"
     },
     {
       "id": "27",
@@ -985,7 +1033,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "28",
@@ -1004,7 +1054,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "29",
@@ -1023,7 +1075,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "30",
@@ -1043,7 +1097,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "31",
@@ -1062,7 +1117,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "32",
@@ -1081,7 +1138,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "33",
@@ -1100,7 +1159,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "34",
@@ -1119,7 +1180,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "35",
@@ -1143,7 +1206,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "36",
@@ -1163,7 +1227,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "37",
@@ -1187,7 +1252,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "38",
@@ -1207,7 +1273,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "39",
@@ -1226,7 +1293,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "40",
@@ -1246,7 +1315,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "41",
@@ -1266,7 +1336,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "42",
@@ -1285,7 +1356,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "43",
@@ -1308,7 +1381,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "44",
@@ -1328,7 +1403,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "45",
@@ -1352,7 +1428,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "46",
@@ -1371,7 +1448,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Slow"
     },
     {
       "id": "47",
@@ -1398,7 +1477,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "48",
@@ -1417,7 +1498,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "49",
@@ -1437,7 +1520,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "50",
@@ -1456,7 +1540,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "51",
@@ -1479,7 +1565,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "53",
@@ -1498,7 +1586,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Upbeat"
     },
     {
       "id": "54",
@@ -1518,7 +1608,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "55",
@@ -1537,7 +1628,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Upbeat"
     },
     {
       "id": "56",
@@ -1556,7 +1649,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Upbeat"
     },
     {
       "id": "57",
@@ -1576,7 +1671,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "58",
@@ -1599,7 +1695,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "59",
@@ -1618,7 +1716,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "60",
@@ -1637,7 +1737,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "61",
@@ -1656,7 +1758,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "62",
@@ -1675,7 +1779,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Slow"
     },
     {
       "id": "63",
@@ -1694,7 +1800,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "64",
@@ -1713,7 +1821,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "65",
@@ -1732,7 +1842,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "66",
@@ -1751,7 +1863,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "67",
@@ -1771,7 +1885,8 @@
       "tags": [],
       "structure": [],
       "sections": [],
-      "language": "Tagalog"
+      "language": "Tagalog",
+      "songType": "Moderate"
     },
     {
       "id": "68",
@@ -1790,7 +1905,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "69",
@@ -1809,7 +1926,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "70",
@@ -1832,7 +1951,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "72",
@@ -1851,7 +1972,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "73",
@@ -1870,7 +1993,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "74",
@@ -1889,7 +2014,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "75",
@@ -1908,7 +2035,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "76",
@@ -1927,7 +2056,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "77",
@@ -1946,7 +2077,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "78",
@@ -1965,7 +2098,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Moderate"
     },
     {
       "id": "79",
@@ -1984,7 +2119,9 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "English",
+      "songType": "Slow"
     },
     {
       "id": "80",
@@ -2003,8 +2140,10 @@
       "externalUrl": null,
       "tags": [],
       "structure": [],
-      "sections": []
+      "sections": [],
+      "language": "Tagalog",
+      "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-01T13:07:19.465Z"
+  "lastUpdated": "2025-10-01T15:21:22.001Z"
 }

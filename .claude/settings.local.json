@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Read(//d/janversantos/Ignite/**)",
       "Bash(git ls-tree:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
