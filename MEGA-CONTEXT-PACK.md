@@ -11,18 +11,15 @@
   - Use Nashville Number System for easier chord communication
 
 - **Current Status:**
-  - ✅ **Phase 1 (Hybrid) - Foundation Complete:**
-    - Songs managed via JSON files (data/songs.json) - git-tracked, admin-editable
+  - ✅ **Phase 1 (Hybrid) - COMPLETE:**
+    - Songs managed via JSON files (data/songs.json) - git-tracked, local editing
     - Services managed via Supabase database - persistent, multi-user
-    - Supabase client configured with service methods
-    - SQL schema ready for database setup
+    - All 82 songs have songType (Upbeat/Slow/Moderate) and language (English/Tagalog)
+    - Service detail page with enhanced song cards
+    - Hybrid chords view (collapsible with full song link)
     - Mobile-optimized responsive design
     - Hamburger menu navigation
-    - All worship leaders with preferred keys displayed
-  - 🔄 **Phase 1 - In Progress:**
-    - Dashboard homepage (pending)
-    - Service detail pages (pending)
-    - Service CRUD UI (pending)
+    - Dashboard with stats and upcoming services
   - 📅 **Phase 2 (Future):** Migrate songs to database for multi-user editing
 
 ---
@@ -283,7 +280,118 @@ ADMIN_PIN=1234
 
 ---
 
-## 9. Supabase Service Methods (lib/supabase.ts)
+## 9. Editing Songs Locally (Git Workflow)
+
+### **Option 1: Edit JSON Directly (Recommended for Bulk Changes)**
+
+1. **Open VS Code:**
+   ```bash
+   cd D:\janversantos\Ignite\ignite-chords-app
+   code data/songs.json
+   ```
+
+2. **Make Your Changes:**
+   - Add new songs
+   - Update existing song fields (title, artist, key, chords, etc.)
+   - Add/modify songType: "Upbeat" | "Slow" | "Moderate"
+   - Add/modify language: "English" | "Tagalog"
+
+3. **Verify JSON is Valid:**
+   ```bash
+   node -e "JSON.parse(require('fs').readFileSync('data/songs.json', 'utf8'))"
+   ```
+   If no error, JSON is valid ✅
+
+4. **Test Locally:**
+   ```bash
+   npm run dev
+   ```
+   Visit http://localhost:3000/songs to verify changes
+
+5. **Commit and Push to GitHub:**
+   ```bash
+   git add data/songs.json
+   git commit -m "Update songs: [describe changes]"
+   git push origin main
+   ```
+
+6. **Vercel Auto-Deploy:**
+   - Vercel detects the push and deploys automatically (~1-2 minutes)
+   - Visit https://ignite-gray.vercel.app to see live changes
+
+### **Option 2: Use Admin Panel (Recommended for Single Song Edits)**
+
+1. **Visit Admin Panel:**
+   - Go to https://ignite-gray.vercel.app/admin
+   - Enter PIN (set in ADMIN_PIN env var)
+
+2. **Edit Songs:**
+   - Card view: `/admin/songs` - Detailed editing
+   - Bulk view: `/admin/bulk` - Quick edits in table format
+
+3. **Save Changes:**
+   - Click "Save All Changes"
+   - This updates the JSON file on the server
+
+4. **Download Updated JSON (if needed):**
+   - Use browser dev tools to download the updated songs.json
+   - Or pull from GitHub after Vercel commits
+
+### **Song Data Structure:**
+
+```json
+{
+  "id": "unique-id",
+  "title": "Song Title",
+  "artist": "Artist Name",
+  "originalKey": "C",
+  "defaultKey": "C",
+  "songType": "Upbeat",        // "Upbeat" | "Slow" | "Moderate"
+  "language": "English",       // "English" | "Tagalog"
+  "worshipLeaders": [
+    { "name": "LEADER_NAME", "preferredKey": "D" }
+  ],
+  "sections": [
+    {
+      "id": "section_id",
+      "name": "Verse 1",
+      "order": 1,
+      "chords": "C  G  Am  F",
+      "snippet": "First line of lyrics...",
+      "notes": ""
+    }
+  ],
+  "structure": ["Intro", "Verse 1", "Chorus"],
+  "tags": [],
+  "ccli": "",
+  "isActive": true,
+  "externalUrl": null
+}
+```
+
+### **Common Commands:**
+
+```bash
+# Start dev server
+npm run dev
+
+# Check JSON validity
+node -e "JSON.parse(require('fs').readFileSync('data/songs.json', 'utf8'))"
+
+# Add metadata to songs (bulk script)
+node scripts/add-song-metadata.js
+
+# Git workflow
+git status                           # Check what changed
+git diff data/songs.json            # Review changes
+git add data/songs.json             # Stage changes
+git commit -m "Update songs"        # Commit
+git push origin main                # Deploy to Vercel
+```
+
+---
+
+## 10. Supabase Service Methods (lib/supabase.ts)
 
 ```typescript
 // Services
@@ -302,7 +410,7 @@ SupabaseService.reorderServiceSongs(songs)
 
 ---
 
-## 10. Deployment (Vercel + Supabase)
+## 11. Deployment (Vercel + Supabase)
 
 ### **Step 1: Supabase Setup**
 1. Create account at supabase.com
@@ -330,7 +438,7 @@ SupabaseService.reorderServiceSongs(songs)
 
 ---
 
-## 11. Known Issues / Pending Tasks
+## 12. Known Issues / Pending Tasks
 
 ### **✅ Completed (Latest Session - Oct 1, 2025):**
 - ✅ View mode toggle (Full/Compact/Chords Only) on song detail page
@@ -377,7 +485,7 @@ SupabaseService.reorderServiceSongs(songs)
 
 ---
 
-## 12. Example Prompt Templates
+## 13. Example Prompt Templates
 
 ### **For continuing Phase 1 work:**
 ```
@@ -442,7 +550,7 @@ Task: [Environment config / Build error / Deployment fix]
 
 ---
 
-## 13. Quick Reference Commands
+## 14. Quick Reference Commands
 
 ### **Development:**
 ```bash
@@ -472,7 +580,7 @@ git push origin main
 
 ---
 
-## 14. Important Notes
+## 15. Important Notes
 
 ### **Data Flow:**
 ```
@@ -498,7 +606,7 @@ Services:
 
 ---
 
-## 15. Success Criteria (Phase 1 Complete)
+## 16. Success Criteria (Phase 1 Complete)
 
 - [x] Songs display from JSON
 - [x] Services stored in Supabase
@@ -515,7 +623,7 @@ Services:
 
 ---
 
-## 16. Deployment Instructions
+## 17. Deployment Instructions
 
 ### **GitHub Setup:**
 1. Create new repository: `https://github.com/janversantos/ignite`
@@ -577,7 +685,7 @@ git push origin main  # Auto-deploys via Vercel
 
 ---
 
-## 17. File References
+## 18. File References
 
 - **Setup:** `SETUP-GUIDE.md`
 - **Next Steps:** `PHASE1-TODO.md`

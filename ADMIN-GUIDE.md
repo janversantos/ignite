@@ -30,6 +30,49 @@
   - Delete selected songs
 - **Quick View**: Click "View" to see song details
 
+## 📋 Song Data Structure
+
+When editing `data/songs.json` directly, each song should have:
+
+```json
+{
+  "id": "unique-id",              // Unique identifier
+  "title": "Song Title",          // Required
+  "artist": "Artist Name",        // Optional
+  "originalKey": "C",             // Required
+  "defaultKey": "C",              // Required (usually same as originalKey)
+  "songType": "Upbeat",           // "Upbeat" | "Slow" | "Moderate"
+  "language": "English",          // "English" | "Tagalog"
+  "worshipLeaders": [             // Array of leaders
+    {
+      "name": "LEADER_NAME",      // UPPERCASE
+      "preferredKey": "D"         // Their preferred key
+    }
+  ],
+  "sections": [                   // Chord sections
+    {
+      "id": "section_id",
+      "name": "Verse 1",          // Section name
+      "order": 1,                 // Order in song
+      "chords": "C  G  Am  F",    // Chord progression
+      "snippet": "First line...", // Lyrics snippet
+      "notes": ""                 // Optional notes
+    }
+  ],
+  "structure": ["Intro", "Verse 1", "Chorus"],
+  "tags": [],
+  "ccli": "",                     // CCLI license number
+  "isActive": true,
+  "externalUrl": null
+}
+```
+
+### Important Fields:
+- **songType**: Determines tempo icon (🔥 Upbeat, 💙 Slow, 💨 Moderate)
+- **language**: Determines flag badge (🇬🇧 English, 🇵🇭 Tagalog)
+- **worshipLeaders**: Names must match exactly across songs
+- **sections**: Required for "Show Chords" button to work
+
 ## 💾 Saving Changes
 
 ### Important: Changes are stored in browser memory!
@@ -65,15 +108,45 @@ Then restart the dev server.
 - Responsive design
 - Swipe-friendly cards
 
-## 🚀 Workflow
+## 🚀 Workflow Options
+
+### **Option 1: Edit Locally (Recommended)**
 
 ```
-1. Login → /admin
+1. Open VS Code:
+   cd D:\janversantos\Ignite\ignite-chords-app
+   code data/songs.json
+
+2. Make changes directly in JSON file
+
+3. Verify JSON is valid:
+   node -e "JSON.parse(require('fs').readFileSync('data/songs.json', 'utf8'))"
+
+4. Test locally:
+   npm run dev
+   Visit http://localhost:3000/songs
+
+5. Commit and push:
+   git add data/songs.json
+   git commit -m "Update songs: [describe changes]"
+   git push origin main
+
+6. Vercel auto-deploys in ~1-2 minutes
+   Visit https://ignite-gray.vercel.app
+```
+
+### **Option 2: Edit via Admin Panel (For Single Songs)**
+
+```
+1. Login → https://ignite-gray.vercel.app/admin
 2. Edit songs → /admin/songs or /admin/bulk
 3. Download JSON → Click green "Download" button
-4. Replace file → Copy to data/songs.json
-5. Deploy → git add, commit, push
-6. Done! → Vercel auto-deploys in ~30 seconds
+4. Replace local file → Save to data/songs.json
+5. Verify changes:
+   npm run dev
+   Check http://localhost:3000/songs
+6. Deploy → git add, commit, push
+7. Done! → Vercel auto-deploys in ~1-2 minutes
 ```
 
 ## 🎯 Tips
