@@ -62,13 +62,17 @@ export default function SongDetailClient({ id }: SongDetailClientProps) {
     return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
   }
 
+  const getSemitonesDifference = (fromKey: string, toKey: string) => {
+    const steps = keys.indexOf(toKey as any) - keys.indexOf(fromKey as any)
+    return steps > 6 ? steps - 12 : steps < -6 ? steps + 12 : steps
+  }
+
   const transposeSong = (newKey: string) => {
     if (!song) return
 
-    const steps = keys.indexOf(newKey as any) - keys.indexOf(currentKey as any)
-    const adjustedSteps = steps > 6 ? steps - 12 : steps < -6 ? steps + 12 : steps
+    const steps = getSemitonesDifference(currentKey, newKey)
 
-    if (adjustedSteps === 0) return
+    if (steps === 0) return
 
     setCurrentKey(newKey)
 
@@ -79,7 +83,7 @@ export default function SongDetailClient({ id }: SongDetailClientProps) {
         ...prev,
         sections: prev.sections.map((section: any) => ({
           ...section,
-          chords: transposeChordProgression(section.chords, adjustedSteps)
+          chords: transposeChordProgression(section.chords, steps)
         }))
       }
     })
@@ -240,12 +244,12 @@ export default function SongDetailClient({ id }: SongDetailClientProps) {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 mb-6">
-        <div className="max-w-6xl mx-auto px-4 py-4 md:py-6">
-          {/* Top Row: Back Button + Title */}
-          <div className="flex items-start gap-3 mb-4">
+    <div className="min-h-screen pb-20">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-40 bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700">
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          {/* Compact Top Row */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => router.back()}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex-shrink-0"
@@ -253,26 +257,52 @@ export default function SongDetailClient({ id }: SongDetailClientProps) {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white break-words">{song.title}</h1>
-              <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                {song.artist && (
-                  <div className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    <span className="truncate">{song.artist}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1">
-                  <Hash className="w-4 h-4" />
-                  Key of {currentKey}
-                </div>
-                {song.ccli && (
-                  <div className="text-xs">
-                    CCLI: {song.ccli}
-                  </div>
-                )}
+              <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">{song.title}</h1>
+              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                {song.artist && <span className="truncate">{song.artist}</span>}
               </div>
             </div>
+            {/* Key Display with Dropdown */}
+            <div className="flex items-center gap-2">
+              <Music className="w-4 h-4 text-gray-500 dark:text-gray-400 hidden sm:block" />
+              <select
+                value={currentKey}
+                onChange={(e) => transposeSong(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold text-sm min-h-[40px] cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                title="Transpose to different key"
+              >
+                <option value={song.defaultKey || song.originalKey}>{song.defaultKey || song.originalKey} (Original)</option>
+                {song.worshipLeaders && song.worshipLeaders.length > 0 && (
+                  <optgroup label="Worship Leaders">
+                    {song.worshipLeaders.map((wl: any, idx: number) => {
+                      const semitones = getSemitonesDifference(song.defaultKey || song.originalKey, wl.preferredKey)
+                      const semitoneLabel = semitones > 0 ? `↑${semitones}` : semitones < 0 ? `↓${Math.abs(semitones)}` : '='
+                      return (
+                        <option key={idx} value={wl.preferredKey}>
+                          {wl.preferredKey} - {wl.name} ({semitoneLabel})
+                        </option>
+                      )
+                    })}
+                  </optgroup>
+                )}
+                <optgroup label="All Keys">
+                  {keys.map(key => {
+                    if (key === (song.defaultKey || song.originalKey) ||
+                        song.worshipLeaders?.some((wl: any) => wl.preferredKey === key)) {
+                      return null
+                    }
+                    return <option key={key} value={key}>{key}</option>
+                  })}
+                </optgroup>
+              </select>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Extended Header (non-sticky) */}
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 mb-6">
+        <div className="max-w-6xl mx-auto px-4 py-4">
 
           {/* Controls - Responsive Grid */}
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
@@ -385,18 +415,37 @@ export default function SongDetailClient({ id }: SongDetailClientProps) {
           <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-l-4 border-purple-500">
             <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-3 flex items-center gap-2">
               <User className="w-5 h-5" />
-              Worship Leaders & Preferred Keys:
+              Quick Transpose - Tap to change key:
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {song.worshipLeaders.map((wl: any, idx: number) => (
-                <div key={idx} className="px-4 py-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-gray-600">
-                  <div className="font-semibold text-gray-900 dark:text-white text-sm">{wl.name}</div>
-                  <div className="text-purple-600 dark:text-purple-400 text-xs mt-1 flex items-center gap-1">
-                    <Hash className="w-3 h-3" />
-                    Key of {wl.preferredKey}
-                  </div>
-                </div>
-              ))}
+              {song.worshipLeaders.map((wl: any, idx: number) => {
+                const semitones = getSemitonesDifference(song.defaultKey, wl.preferredKey);
+                const semitoneLabel = semitones > 0 ? `↑${semitones}` : semitones < 0 ? `↓${Math.abs(semitones)}` : '=';
+                const isActive = currentKey === wl.preferredKey;
+
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => transposeSong(wl.preferredKey)}
+                    className={`min-h-[44px] px-4 py-3 rounded-lg shadow-sm border transition-all text-left ${
+                      isActive
+                        ? 'bg-purple-600 text-white border-purple-700 ring-2 ring-purple-400'
+                        : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:bg-purple-100 dark:hover:bg-purple-900/40 hover:border-purple-400'
+                    }`}
+                  >
+                    <div className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                      {wl.name}
+                    </div>
+                    <div className={`text-xs mt-1 flex items-center gap-1 ${isActive ? 'text-purple-100' : 'text-purple-600 dark:text-purple-400'}`}>
+                      <Hash className="w-3 h-3" />
+                      Key of {wl.preferredKey}
+                      <span className={`ml-auto font-mono font-semibold ${isActive ? 'text-white' : 'text-purple-700 dark:text-purple-300'}`}>
+                        {semitoneLabel}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

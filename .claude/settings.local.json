@@ -7,7 +7,8 @@
       "Read(//d/janversantos/Ignite/**)",
       "Bash(git ls-tree:*)",
       "Bash(cat:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

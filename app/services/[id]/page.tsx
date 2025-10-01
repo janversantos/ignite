@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, Clock, User, Plus, Trash2, ChevronUp, ChevronDown,
 import { SupabaseService } from '@/lib/supabase'
 import { SongsService } from '@/lib/songsData'
 import { AddSongToServiceModal } from '@/components/AddSongToServiceModal'
+import { transposeChordProgression, getAllKeys } from '@/utils/chordTransposer'
 
 // Mark route as dynamic
 export const dynamic = 'force-dynamic'
@@ -61,6 +62,8 @@ export default function ServiceDetailPage() {
   const [isEditingService, setIsEditingService] = useState(false)
   const [editedService, setEditedService] = useState<Service | null>(null)
   const [expandedSongIds, setExpandedSongIds] = useState<Set<string>>(new Set())
+  const [songKeys, setSongKeys] = useState<Record<string, string>>({}) // Track current key for each song
+  const [transposedSongs, setTransposedSongs] = useState<Record<string, Song>>({}) // Track transposed song data
 
   useEffect(() => {
     loadService()
@@ -221,6 +224,52 @@ export default function ServiceDetailPage() {
         section: section.name,
         chords: section.chords
       }))
+  }
+
+  const getSemitonesDifference = (fromKey: string, toKey: string) => {
+    const keys = getAllKeys()
+    const steps = keys.indexOf(toKey as any) - keys.indexOf(fromKey as any)
+    return steps > 6 ? steps - 12 : steps < -6 ? steps + 12 : steps
+  }
+
+  const transposeSongInService = (serviceSongId: string, song: Song, newKey: string) => {
+    // Always calculate steps from the ORIGINAL key, not current key
+    const originalKey = song.defaultKey || song.originalKey || 'C'
+    const steps = getSemitonesDifference(originalKey, newKey)
+
+    if (steps === 0) {
+      // Reset to original
+      setSongKeys(prev => ({ ...prev, [serviceSongId]: originalKey }))
+      setTransposedSongs(prev => {
+        const updated = { ...prev }
+        delete updated[serviceSongId]
+        return updated
+      })
+      return
+    }
+
+    // Update the current key
+    setSongKeys(prev => ({ ...prev, [serviceSongId]: newKey }))
+
+    // Transpose the song from original
+    const transposedSong: Song = {
+      ...song,
+      sections: song.sections?.map(section => ({
+        ...section,
+        chords: transposeChordProgression(section.chords, steps)
+      }))
+    }
+
+    setTransposedSongs(prev => ({ ...prev, [serviceSongId]: transposedSong }))
+  }
+
+  const transposeBySteps = (serviceSongId: string, song: Song, steps: number) => {
+    const currentKey = songKeys[serviceSongId] || song.defaultKey || song.originalKey || 'C'
+    const keys = getAllKeys()
+    const currentIndex = keys.indexOf(currentKey as any)
+    const newIndex = (currentIndex + steps + 12) % 12
+    const newKey = keys[newIndex]
+    transposeSongInService(serviceSongId, song, newKey)
   }
 
   if (loading) {
@@ -402,10 +451,13 @@ export default function ServiceDetailPage() {
         ) : (
           <div className="space-y-3">
             {serviceSongs.map((serviceSong, index) => {
-              const song = getSongDetails(serviceSong.song_id)
-              if (!song) return null
+              const originalSong = getSongDetails(serviceSong.song_id)
+              if (!originalSong) return null
 
-              const displayKey = serviceSong.key || song.originalKey || song.defaultKey || 'Unknown'
+              // Use transposed song if available, otherwise use original
+              const song = transposedSongs[serviceSong.id] || originalSong
+              const currentKey = songKeys[serviceSong.id] || serviceSong.key || originalSong.defaultKey || originalSong.originalKey || 'C'
+              const displayKey = currentKey
               const isExpanded = expandedSongIds.has(serviceSong.id)
               const chordProgression = getChordProgression(song)
 
@@ -452,7 +504,7 @@ export default function ServiceDetailPage() {
                           {/* Language Badge */}
                           {song.language && (
                             <span className="inline-flex items-center px-2.5 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-md">
-                              {song.language === 'English' ? '🇬🇧' : '🇵🇭'} {song.language}
+                              {song.language}
                             </span>
                           )}
                         </div>
@@ -550,6 +602,51 @@ export default function ServiceDetailPage() {
                   {/* Expanded Chords Section */}
                   {isExpanded && chordProgression && (
                     <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4">
+                      {/* Transpose Controls - Single Row */}
+                      <div className="mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-wrap items-center gap-2 text-sm">
+                          {/* Worship Leader Buttons */}
+                          {originalSong.worshipLeaders && originalSong.worshipLeaders.length > 0 && (
+                            <>
+                              {originalSong.worshipLeaders.map((wl: any, idx: number) => {
+                                const isActive = currentKey === wl.preferredKey
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => transposeSongInService(serviceSong.id, originalSong, wl.preferredKey)}
+                                    className={`px-3 py-1.5 rounded-md font-medium transition-all ${
+                                      isActive
+                                        ? 'bg-purple-600 text-white ring-2 ring-purple-400'
+                                        : 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/60'
+                                    }`}
+                                  >
+                                    {wl.name}-{wl.preferredKey}
+                                  </button>
+                                )
+                              })}
+                              <span className="text-gray-400 dark:text-gray-500 mx-1">|</span>
+                            </>
+                          )}
+
+                          {/* Fine-tune buttons */}
+                          <button
+                            onClick={() => transposeBySteps(serviceSong.id, originalSong, -1)}
+                            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 font-medium transition-colors"
+                          >
+                            -1
+                          </button>
+                          <span className="px-3 py-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 rounded-md font-semibold">
+                            {currentKey}
+                          </span>
+                          <button
+                            onClick={() => transposeBySteps(serviceSong.id, originalSong, 1)}
+                            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 font-medium transition-colors"
+                          >
+                            +1
+                          </button>
+                        </div>
+                      </div>
+
                       <div className="space-y-3">
                         {chordProgression.map((section, idx) => (
                           <div key={idx}>

@@ -34,41 +34,25 @@
           "notes": ""
         },
         {
-          "id": "section_1759299750196_1",
-          "name": "Verse 2",
-          "order": 2,
-          "chords": "G  Em  D  C",
-          "snippet": "I could sing these songs",
-          "notes": ""
-        },
-        {
           "id": "section_1759299750196_2",
           "name": "Chorus",
-          "order": 3,
+          "order": 2,
           "chords": "G  D  Em  C-D x2",
           "snippet": "So I throw up my hands and praise You again and again",
           "notes": ""
         },
         {
-          "id": "section_1759299750196_3",
-          "name": "Verse 3",
-          "order": 4,
-          "chords": "G  Em  D  C",
-          "snippet": "I've got one response",
-          "notes": ""
-        },
-        {
           "id": "section_1759299750196_5",
           "name": "Bridge",
-          "order": 5,
-          "chords": "G x1 | G  D  Em  C-D",
+          "order": 3,
+          "chords": "G\nG  D  Em  C-D",
           "snippet": "So come on, my soul",
           "notes": ""
         },
         {
           "id": "section_1759299750196_6",
           "name": "Last Chorus",
-          "order": 6,
+          "order": 4,
           "chords": "G  Dm  C  Cm  x2",
           "snippet": "So I throw up my hands and praise You again and again",
           "notes": ""
@@ -105,7 +89,7 @@
           "id": "section_1759299439856_0",
           "name": "Chorus",
           "order": 1,
-          "chords": "Dm  F  C  C | Dm  F  C  C",
+          "chords": "Dm  F  C  C x2",
           "snippet": "I'm caught up in Your presence",
           "notes": ""
         },
@@ -156,9 +140,17 @@
       ],
       "sections": [
         {
+          "id": "section_1759298541413",
+          "name": "Intro",
+          "order": 1,
+          "chords": "C F Am-G",
+          "snippet": "",
+          "notes": ""
+        },
+        {
           "id": "section_1759298473265_0",
           "name": "Verse",
-          "order": 1,
+          "order": 2,
           "chords": "C F Am-G C",
           "snippet": "Through You the blind will see",
           "notes": ""
@@ -166,17 +158,9 @@
         {
           "id": "section_1759298473265_1",
           "name": "Chorus",
-          "order": 2,
+          "order": 3,
           "chords": "C F Am-G C",
           "snippet": "I am free to run",
-          "notes": ""
-        },
-        {
-          "id": "section_1759298541413",
-          "name": "Intro",
-          "order": 3,
-          "chords": "C F Am-G",
-          "snippet": "",
           "notes": ""
         },
         {
@@ -229,7 +213,7 @@
         },
         {
           "id": "section_1759298005109_1",
-          "name": "Verse 1",
+          "name": "Verse",
           "order": 2,
           "chords": "C  G  D  Em - G/Bm",
           "snippet": "You've turned it all around / Where I was hurting now I'm rejoicing",
@@ -252,43 +236,11 @@
           "notes": ""
         },
         {
-          "id": "section_1759298005109_4",
-          "name": "Verse 2",
-          "order": 5,
-          "chords": "C  G  D  Em - G/Bm",
-          "snippet": "You took away my pain / You turned my mourning into dancing",
-          "notes": ""
-        },
-        {
-          "id": "section_1759298005109_5",
-          "name": "Pre-Chorus",
-          "order": 6,
-          "chords": "C  Em  D\nC  Em  D\nG/B-C  Em  D\nC  Em  D",
-          "snippet": "Let the celebration begin / Make a joyful noise unto Him",
-          "notes": ""
-        },
-        {
-          "id": "section_1759298005109_6",
-          "name": "Chorus",
-          "order": 7,
-          "chords": "G   G/Bm C\nEm   G/Bm  C\nG  G/Bm  C\nEm  D  C",
-          "snippet": "You have given me a joy that won't stop / And will never leave, so I will   praise You with gladness",
-          "notes": ""
-        },
-        {
           "id": "section_1759298005109_7",
           "name": "Bridge",
-          "order": 8,
+          "order": 5,
           "chords": "G  C  G  D\nG  C  Em-D-C",
           "snippet": "You've turned my sadness into gladness",
-          "notes": ""
-        },
-        {
-          "id": "section_1759298005109_8",
-          "name": "Chorus",
-          "order": 9,
-          "chords": "G   G/Bm C\nEm   G/Bm  C\nG  G/Bm  C\nEm  D  C",
-          "snippet": "You have given me a joy that won't stop / And will never leave, so I will   praise You with gladness",
           "notes": ""
         }
       ],
@@ -2145,5 +2097,5 @@
       "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-01T15:21:22.001Z"
+  "lastUpdated": "2025-10-01T15:54:56.420Z"
 }

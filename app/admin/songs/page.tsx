@@ -236,6 +236,40 @@ function AdminSongsContent() {
     updateField(songId, 'sections', newSections)
   }
 
+  const moveSectionUp = (songId: string, sectionId: string) => {
+    const currentSong = getEditedSong(songs.find(s => s.id === songId))
+    const sections = [...currentSong.sections].sort((a, b) => a.order - b.order)
+    const currentIndex = sections.findIndex((s: any) => s.id === sectionId)
+
+    if (currentIndex > 0) {
+      // Swap with previous section
+      const temp = sections[currentIndex]
+      sections[currentIndex] = sections[currentIndex - 1]
+      sections[currentIndex - 1] = temp
+
+      // Update order values
+      const reorderedSections = sections.map((s: any, idx: number) => ({ ...s, order: idx + 1 }))
+      updateField(songId, 'sections', reorderedSections)
+    }
+  }
+
+  const moveSectionDown = (songId: string, sectionId: string) => {
+    const currentSong = getEditedSong(songs.find(s => s.id === songId))
+    const sections = [...currentSong.sections].sort((a, b) => a.order - b.order)
+    const currentIndex = sections.findIndex((s: any) => s.id === sectionId)
+
+    if (currentIndex < sections.length - 1) {
+      // Swap with next section
+      const temp = sections[currentIndex]
+      sections[currentIndex] = sections[currentIndex + 1]
+      sections[currentIndex + 1] = temp
+
+      // Update order values
+      const reorderedSections = sections.map((s: any, idx: number) => ({ ...s, order: idx + 1 }))
+      updateField(songId, 'sections', reorderedSections)
+    }
+  }
+
   const processImportAndUpdate = async (contentToImport: string, existingSong: any, skipLines: number, lines: string[], title: string, artist: string) => {
     let sections: any[] = []
     let currentSection: any = null
@@ -1005,7 +1039,7 @@ function AdminSongsContent() {
                     </div>
 
                     <div className="space-y-2">
-                      {displaySong.sections?.map((section: any) => (
+                      {displaySong.sections?.sort((a: any, b: any) => a.order - b.order).map((section: any, idx: number) => (
                         <div key={section.id} className="border dark:border-gray-600 rounded-lg p-3 space-y-2 bg-gray-50 dark:bg-gray-700/30">
                           <div className="flex items-center gap-2">
                             <input
@@ -1016,8 +1050,25 @@ function AdminSongsContent() {
                               placeholder="Section name (e.g., Verse 1, Chorus)"
                             />
                             <button
+                              onClick={() => moveSectionUp(song.id, section.id)}
+                              disabled={idx === 0}
+                              className="p-1 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                              title="Move up"
+                            >
+                              <ChevronUp className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => moveSectionDown(song.id, section.id)}
+                              disabled={idx === displaySong.sections.length - 1}
+                              className="p-1 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                              title="Move down"
+                            >
+                              <ChevronDown className="w-4 h-4" />
+                            </button>
+                            <button
                               onClick={() => removeSection(song.id, section.id)}
                               className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                              title="Remove section"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
