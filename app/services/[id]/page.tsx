@@ -9,6 +9,7 @@ import { AddSongToServiceModal } from '@/components/AddSongToServiceModal'
 import { AddTeamMemberModal } from '@/components/AddTeamMemberModal'
 import { EditTeamMemberModal } from '@/components/EditTeamMemberModal'
 import { transposeChordProgression, getAllKeys } from '@/utils/chordTransposer'
+import { chordProgressionToNumbers } from '@/utils/numberSystem'
 
 // Mark route as dynamic
 export const dynamic = 'force-dynamic'
@@ -455,9 +456,9 @@ export default function ServiceDetailPage() {
         </div>
       </div>
 
-      {/* Team Members Section */}
+      {/* Team Members Section - Option 2: Grouped by Role */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Team ({serviceMembers.length} {serviceMembers.length === 1 ? 'member' : 'members'})
           </h2>
@@ -466,7 +467,7 @@ export default function ServiceDetailPage() {
             className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
           >
             <Plus className="w-4 h-4" />
-            Add Team Member
+            Add Member
           </button>
         </div>
 
@@ -484,57 +485,47 @@ export default function ServiceDetailPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {serviceMembers.map((serviceMember) => (
-              <div
-                key={serviceMember.id}
-                className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                      {serviceMember.member.name}
-                    </h3>
+            {/* Group members by role */}
+            {(() => {
+              const groupedByRole = serviceMembers.reduce((acc, sm) => {
+                sm.roles.forEach(role => {
+                  if (!acc[role]) acc[role] = []
+                  acc[role].push(sm)
+                })
+                return acc
+              }, {} as Record<string, ServiceMember[]>)
 
-                    {/* Roles */}
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      {serviceMember.roles.map((role, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-md text-sm font-medium"
-                        >
-                          {role}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Notes */}
-                    {serviceMember.notes && (
-                      <p className="text-sm text-gray-600 dark:text-gray-300 italic mt-2">
-                        📌 {serviceMember.notes}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Edit & Remove Buttons */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingMember(serviceMember)}
-                      className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex-shrink-0"
-                      title="Edit member"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleRemoveMember(serviceMember.id)}
-                      className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex-shrink-0"
-                      title="Remove member"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+              return Object.entries(groupedByRole).map(([role, members]) => (
+                <div key={role} className="flex items-start gap-3">
+                  <span className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-sm font-semibold rounded-md whitespace-nowrap">
+                    {role}
+                  </span>
+                  <div className="flex-1 flex flex-wrap items-center gap-2">
+                    {members.map((sm) => (
+                      <div key={sm.id} className="inline-flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-600">
+                        <span className="text-gray-900 dark:text-white font-medium">{sm.member.name}</span>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setEditingMember(sm)}
+                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-1"
+                            title="Edit member"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleRemoveMember(sm.id)}
+                            className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1"
+                            title="Remove member"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            })()}
           </div>
         )}
       </div>
@@ -766,16 +757,24 @@ export default function ServiceDetailPage() {
                       </div>
 
                       <div className="space-y-3">
-                        {chordProgression.map((section, idx) => (
-                          <div key={idx}>
-                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                              {section.section}:
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">
-                              {section.chords}
-                            </p>
-                          </div>
-                        ))}
+                        {chordProgression.map((section, idx) => {
+                          const nashville = chordProgressionToNumbers(section.chords, currentKey)
+                          return (
+                            <div key={idx}>
+                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                {section.section}:
+                              </h4>
+                              <div className="space-y-1">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                                  {section.chords}
+                                </p>
+                                <p className="text-xs text-primary-600 dark:text-primary-400 font-mono">
+                                  {nashville}
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
 
                       <button
