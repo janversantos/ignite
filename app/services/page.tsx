@@ -35,7 +35,7 @@ export default function ServicesPage() {
 
   const loadServices = async () => {
     try {
-      const data = await SupabaseService.getAllServices()
+      const data = await SupabaseService.getServices()
       // Sort by date (newest first)
       const sorted = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       setServices(sorted)
