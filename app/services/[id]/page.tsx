@@ -8,6 +8,7 @@ import { SongsService } from '@/lib/songsData'
 import { AddSongToServiceModal } from '@/components/AddSongToServiceModal'
 import { AddTeamMemberModal } from '@/components/AddTeamMemberModal'
 import { EditTeamMemberModal } from '@/components/EditTeamMemberModal'
+import { PerformanceMode } from '@/components/PerformanceMode'
 import { transposeChordProgression, getAllKeys } from '@/utils/chordTransposer'
 import { chordProgressionToNumbers } from '@/utils/numberSystem'
 
@@ -79,6 +80,7 @@ export default function ServiceDetailPage() {
   const [showAddMemberModal, setShowAddMemberModal] = useState(false)
   const [editingMember, setEditingMember] = useState<ServiceMember | null>(null)
   const [isEditingService, setIsEditingService] = useState(false)
+  const [showPerformanceMode, setShowPerformanceMode] = useState(false)
   const [editedService, setEditedService] = useState<Service | null>(null)
   const [expandedSongIds, setExpandedSongIds] = useState<Set<string>>(new Set())
   const [songKeys, setSongKeys] = useState<Record<string, string>>({}) // Track current key for each song
@@ -536,13 +538,24 @@ export default function ServiceDetailPage() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Setlist ({serviceSongs.length} {serviceSongs.length === 1 ? 'song' : 'songs'})
           </h2>
-          <button
-            onClick={() => setShowAddSongModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
-          >
-            <Plus className="w-4 h-4" />
-            Add Song
-          </button>
+          <div className="flex gap-2">
+            {serviceSongs.length > 0 && (
+              <button
+                onClick={() => setShowPerformanceMode(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
+              >
+                <Music className="w-4 h-4" />
+                Performance Mode
+              </button>
+            )}
+            <button
+              onClick={() => setShowAddSongModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
+            >
+              <Plus className="w-4 h-4" />
+              Add Song
+            </button>
+          </div>
         </div>
 
         {serviceSongs.length === 0 ? (
@@ -819,6 +832,27 @@ export default function ServiceDetailPage() {
           serviceMember={editingMember}
           onClose={() => setEditingMember(null)}
           onMemberUpdated={loadService}
+        />
+      )}
+
+      {/* Performance Mode */}
+      {showPerformanceMode && (
+        <PerformanceMode
+          songs={serviceSongs.map(serviceSong => {
+            const originalSong = getSongDetails(serviceSong.song_id)
+            const song = transposedSongs[serviceSong.id] || originalSong
+            const currentKey = songKeys[serviceSong.id] || serviceSong.key || originalSong?.defaultKey || originalSong?.originalKey || 'C'
+
+            return {
+              song: {
+                ...(song || { id: '', title: 'Unknown', sections: [] }),
+                worshipLeaders: originalSong?.worshipLeaders
+              },
+              key: currentKey,
+              serviceSongId: serviceSong.id
+            }
+          })}
+          onClose={() => setShowPerformanceMode(false)}
         />
       )}
     </div>
