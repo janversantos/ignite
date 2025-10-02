@@ -72,6 +72,24 @@ export function chordToNumber(chord: string, key: string): string {
 
   const numberNotation = degreeMap[degree] || '?'
 
+  // Helper function to convert note names in suffix
+  const convertNotesInSuffix = (suf: string): string => {
+    // Replace any note names (A-G with optional # or b) in the suffix with their numbers
+    return suf.replace(/([A-G][#b]?)/g, (match) => {
+      let noteToConvert = match
+      if (noteToConvert in flatToSharp) {
+        noteToConvert = flatToSharp[noteToConvert]
+      }
+      const noteIdx = notes.indexOf(noteToConvert)
+      if (noteIdx === -1) return match
+
+      let noteDegree = noteIdx - keyIndex
+      if (noteDegree < 0) noteDegree += 12
+
+      return degreeMap[noteDegree] || match
+    })
+  }
+
   // Determine if minor (lowercase in Nashville system)
   let finalNumber = numberNotation
   if (suffix.startsWith('m') && !suffix.startsWith('maj')) {
@@ -79,7 +97,8 @@ export function chordToNumber(chord: string, key: string): string {
     // but for simplicity, we'll add 'm' suffix
     finalNumber = numberNotation + 'm'
   } else if (suffix) {
-    finalNumber = numberNotation + suffix
+    // Convert any note names in the suffix
+    finalNumber = numberNotation + convertNotesInSuffix(suffix)
   }
 
   // Handle bass note conversion if present
@@ -96,7 +115,8 @@ export function chordToNumber(chord: string, key: string): string {
       if (bassSuffix.startsWith('m') && !bassSuffix.startsWith('maj')) {
         finalBassNumber = bassNumberNotation + 'm'
       } else if (bassSuffix) {
-        finalBassNumber = bassNumberNotation + bassSuffix
+        // Convert any note names in the bass suffix
+        finalBassNumber = bassNumberNotation + convertNotesInSuffix(bassSuffix)
       }
 
       finalNumber = finalNumber + '/' + finalBassNumber

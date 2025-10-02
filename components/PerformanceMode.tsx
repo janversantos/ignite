@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, ChevronLeft, ChevronRight, Settings, Minus, Plus, List, HelpCircle } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Settings, Minus, Plus, List, HelpCircle, Maximize, Minimize } from 'lucide-react'
 import { chordProgressionToNumbers } from '@/utils/numberSystem'
 import { transposeChordProgression, getAllKeys } from '@/utils/chordTransposer'
 
@@ -36,8 +36,8 @@ type FontSize = 'small' | 'medium' | 'large'
 
 export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [touchStart, setTouchStart] = useState(0)
-  const [touchEnd, setTouchEnd] = useState(0)
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 })
+  const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 })
   const [showSettings, setShowSettings] = useState(false)
   const [showJumpMenu, setShowJumpMenu] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
@@ -51,10 +51,125 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
     songs.reduce((acc, song, idx) => ({ ...acc, [idx]: song.key }), {})
   )
   const [autoFontSizePx, setAutoFontSizePx] = useState<number | null>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showExitHint, setShowExitHint] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const currentSong = songs[currentIndex]
   const currentKey = currentKeys[currentIndex] || currentSong.key
+
+  // Auto-hide exit hint after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowExitHint(false)
+    }, 5000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Fullscreen mode
+  useEffect(() => {
+    const enterFullscreen = async () => {
+      try {
+        const elem = document.documentElement as any
+
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen()
+        } else if (elem.webkitRequestFullscreen) {
+          // iOS Safari
+          await elem.webkitRequestFullscreen()
+        } else if (elem.mozRequestFullScreen) {
+          // Firefox
+          await elem.mozRequestFullScreen()
+        } else if (elem.msRequestFullscreen) {
+          // IE11
+          await elem.msRequestFullscreen()
+        }
+
+        setIsFullscreen(true)
+      } catch (err) {
+        console.log('Fullscreen request failed:', err)
+        // Fullscreen might be blocked by browser, that's okay
+      }
+    }
+
+    const handleFullscreenChange = () => {
+      const doc = document as any
+      const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement)
+      setIsFullscreen(isFs)
+    }
+
+    // Request fullscreen on mount (with slight delay to ensure user interaction)
+    const timer = setTimeout(() => {
+      enterFullscreen()
+    }, 100)
+
+    // Listen for fullscreen changes
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange)
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange)
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange)
+
+      // Exit fullscreen on unmount
+      const doc = document as any
+      if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen().catch(() => {})
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen()
+        }
+      }
+    }
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      const doc = document as any
+      const elem = document.documentElement as any
+
+      if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+        // Exit fullscreen
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen()
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen()
+        }
+      } else {
+        // Enter fullscreen
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen()
+        } else if (elem.webkitRequestFullscreen) {
+          await elem.webkitRequestFullscreen()
+        }
+      }
+    } catch (err) {
+      console.log('Fullscreen toggle failed:', err)
+    }
+  }
+
+  const handleClose = async () => {
+    // Exit fullscreen before closing
+    const doc = document as any
+    if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+      try {
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen()
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen()
+        }
+      } catch (err) {
+        console.log('Exit fullscreen failed:', err)
+      }
+    }
+    onClose()
+  }
 
   // Arrow key navigation
   useEffect(() => {
@@ -77,7 +192,7 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
           setShowHelp(false)
           setShowSettings(false)
         } else {
-          onClose()
+          handleClose()
         }
       } else if (e.key.toLowerCase() === 'j') {
         e.preventDefault()
@@ -100,28 +215,49 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
 
   // Touch/Swipe handlers
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX)
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    })
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    })
   }
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
+    if (!touchStart.x || !touchEnd.x) return
 
-    const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
+    const distanceX = touchStart.x - touchEnd.x
+    const distanceY = touchStart.y - touchEnd.y
+    const absDistanceX = Math.abs(distanceX)
+    const absDistanceY = Math.abs(distanceY)
 
-    if (isLeftSwipe) {
-      goToNext()
-    } else if (isRightSwipe) {
-      goToPrevious()
+    // Determine if horizontal or vertical swipe
+    if (absDistanceX > absDistanceY) {
+      // Horizontal swipe
+      const isLeftSwipe = distanceX > 50
+      const isRightSwipe = distanceX < -50
+
+      if (isLeftSwipe) {
+        goToNext()
+      } else if (isRightSwipe) {
+        goToPrevious()
+      }
+    } else {
+      // Vertical swipe
+      const isDownSwipe = distanceY < -100 // Swipe down to exit
+
+      if (isDownSwipe) {
+        handleClose()
+      }
     }
 
-    setTouchStart(0)
-    setTouchEnd(0)
+    setTouchStart({ x: 0, y: 0 })
+    setTouchEnd({ x: 0, y: 0 })
   }
 
   const goToNext = () => {
@@ -298,6 +434,15 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
             <List className="w-5 h-5" />
           </button>
 
+          {/* Fullscreen Toggle */}
+          <button
+            onClick={toggleFullscreen}
+            className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors"
+            title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          >
+            {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+          </button>
+
           {/* Settings Button */}
           <button
             onClick={() => setShowSettings(!showSettings)}
@@ -322,14 +467,27 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
 
           {/* Close Button */}
           <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors"
-            title="Exit (ESC)"
+            onClick={handleClose}
+            className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            title="Exit (ESC or swipe down)"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
       </div>
+
+      {/* Exit Hint for Mobile */}
+      {showExitHint && (
+        <div className="bg-primary-600/90 text-white px-4 py-2 text-center text-sm animate-fade-in md:hidden">
+          <span>💡 Swipe down to exit or tap the red X button</span>
+          <button
+            onClick={() => setShowExitHint(false)}
+            className="ml-3 text-white/80 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-6 relative">
@@ -457,32 +615,54 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
           <div className="absolute top-4 right-4 bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-2xl w-80 max-w-[90vw] z-20">
             <h3 className="text-white font-bold mb-4 flex items-center gap-2">
               <HelpCircle className="w-4 h-4" />
-              Keyboard Shortcuts
+              Controls
             </h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Next Song</span>
-                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">→ / Space / PgDn</code>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Previous Song</span>
-                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">← / Bksp / PgUp</code>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Jump to Song</span>
-                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">J / 1-9</code>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Help</span>
-                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">H / ?</code>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Exit</span>
-                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">ESC</code>
+
+            {/* Keyboard Shortcuts */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs font-semibold mb-2">⌨️ Keyboard</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Next Song</span>
+                  <code className="bg-gray-800 px-2 py-1 rounded text-gray-200 text-xs">→ / Space</code>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Previous Song</span>
+                  <code className="bg-gray-800 px-2 py-1 rounded text-gray-200 text-xs">← / Bksp</code>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Jump to Song</span>
+                  <code className="bg-gray-800 px-2 py-1 rounded text-gray-200 text-xs">J / 1-9</code>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Exit</span>
+                  <code className="bg-gray-800 px-2 py-1 rounded text-gray-200 text-xs">ESC</code>
+                </div>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-gray-700">
-              <p className="text-gray-400 text-xs mb-2">🎹 Foot Pedal Support</p>
+
+            {/* Touch Gestures */}
+            <div className="mb-4 pt-3 border-t border-gray-700">
+              <p className="text-gray-400 text-xs font-semibold mb-2">📱 Touch Gestures</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Next Song</span>
+                  <span className="text-gray-500 text-xs">Swipe left ←</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Previous Song</span>
+                  <span className="text-gray-500 text-xs">Swipe right →</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Exit</span>
+                  <span className="text-gray-500 text-xs">Swipe down ↓</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Foot Pedal */}
+            <div className="pt-3 border-t border-gray-700">
+              <p className="text-gray-400 text-xs font-semibold mb-1">🎹 Foot Pedal</p>
               <p className="text-gray-500 text-xs">PageUp/PageDown keys work with Bluetooth foot pedals (AirTurn, etc.)</p>
             </div>
           </div>

@@ -94,7 +94,17 @@ export default function ServiceDetailPage() {
     try {
       const data = await SupabaseService.getServiceById(serviceId)
       setService(data)
-      setServiceSongs(data.songs || [])
+      const songs = data.songs || []
+      setServiceSongs(songs)
+
+      // Initialize song keys from database
+      const initialKeys: Record<string, string> = {}
+      songs.forEach((serviceSong: ServiceSong) => {
+        if (serviceSong.key) {
+          initialKeys[serviceSong.id] = serviceSong.key
+        }
+      })
+      setSongKeys(initialKeys)
 
       // Load team members
       const members = await SupabaseService.getServiceMembers(serviceId)
@@ -269,7 +279,7 @@ export default function ServiceDetailPage() {
     return steps > 6 ? steps - 12 : steps < -6 ? steps + 12 : steps
   }
 
-  const transposeSongInService = (serviceSongId: string, song: Song, newKey: string) => {
+  const transposeSongInService = async (serviceSongId: string, song: Song, newKey: string) => {
     // Always calculate steps from the ORIGINAL key, not current key
     const originalKey = song.defaultKey || song.originalKey || 'C'
     const steps = getSemitonesDifference(originalKey, newKey)
@@ -282,6 +292,13 @@ export default function ServiceDetailPage() {
         delete updated[serviceSongId]
         return updated
       })
+
+      // Save to database
+      try {
+        await SupabaseService.updateServiceSong(serviceSongId, { key: originalKey })
+      } catch (error) {
+        console.error('Error saving key to database:', error)
+      }
       return
     }
 
@@ -298,6 +315,13 @@ export default function ServiceDetailPage() {
     }
 
     setTransposedSongs(prev => ({ ...prev, [serviceSongId]: transposedSong }))
+
+    // Save to database
+    try {
+      await SupabaseService.updateServiceSong(serviceSongId, { key: newKey })
+    } catch (error) {
+      console.error('Error saving key to database:', error)
+    }
   }
 
   const transposeBySteps = (serviceSongId: string, song: Song, steps: number) => {

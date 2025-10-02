@@ -197,8 +197,8 @@
       "id": "song_1759298005109",
       "title": "Joy",
       "artist": "PlanetShakers",
-      "originalKey": "C",
-      "defaultKey": "C",
+      "originalKey": "G",
+      "defaultKey": "G",
       "ccli": "",
       "tags": [],
       "worshipLeaders": [
@@ -2113,5 +2113,5 @@
       "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-02T04:28:06.503Z"
+  "lastUpdated": "2025-10-02T07:51:27.591Z"
 }
