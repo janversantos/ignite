@@ -372,4 +372,79 @@ export class SupabaseService {
       throw errors[0].error
     }
   }
+
+  // ========================================
+  // TEAM MEMBERS MANAGEMENT
+  // ========================================
+
+  static async getTeamMembers() {
+    const { data, error } = await supabase
+      .from('team_members')
+      .select('*')
+      .eq('is_active', true)
+      .order('name')
+
+    if (error) throw error
+    return data
+  }
+
+  static async getServiceMembers(serviceId: string) {
+    const { data, error } = await supabase
+      .from('service_members')
+      .select(`
+        *,
+        member:team_members(*)
+      `)
+      .eq('service_id', serviceId)
+      .order('created_at')
+
+    if (error) throw error
+    return data
+  }
+
+  static async addMemberToService(serviceMember: {
+    service_id: string
+    member_id: string
+    roles: string[]
+    notes?: string
+  }) {
+    const { data, error } = await supabase
+      .from('service_members')
+      .insert(serviceMember)
+      .select(`
+        *,
+        member:team_members(*)
+      `)
+      .single()
+
+    if (error) throw error
+    return data
+  }
+
+  static async updateServiceMember(id: string, updates: {
+    roles?: string[]
+    notes?: string
+  }) {
+    const { data, error } = await supabase
+      .from('service_members')
+      .update(updates)
+      .eq('id', id)
+      .select(`
+        *,
+        member:team_members(*)
+      `)
+      .single()
+
+    if (error) throw error
+    return data
+  }
+
+  static async removeMemberFromService(id: string) {
+    const { error } = await supabase
+      .from('service_members')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
+  }
 }

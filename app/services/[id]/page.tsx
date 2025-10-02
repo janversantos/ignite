@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Calendar, Clock, User, Plus, Trash2, ChevronUp, ChevronDown, Music, Edit2, ChevronRight, Zap, Wind, Heart } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, User, Plus, Trash2, ChevronUp, ChevronDown, Music, Edit2, ChevronRight, Zap, Wind, Heart, Users } from 'lucide-react'
 import { SupabaseService } from '@/lib/supabase'
 import { SongsService } from '@/lib/songsData'
 import { AddSongToServiceModal } from '@/components/AddSongToServiceModal'
+import { AddTeamMemberModal } from '@/components/AddTeamMemberModal'
+import { EditTeamMemberModal } from '@/components/EditTeamMemberModal'
 import { transposeChordProgression, getAllKeys } from '@/utils/chordTransposer'
 
 // Mark route as dynamic
@@ -50,6 +52,19 @@ interface Song {
   }>
 }
 
+interface ServiceMember {
+  id: string
+  service_id: string
+  member_id: string
+  roles: string[]
+  notes?: string
+  member: {
+    id: string
+    name: string
+    skills: string[]
+  }
+}
+
 export default function ServiceDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -57,8 +72,11 @@ export default function ServiceDetailPage() {
 
   const [service, setService] = useState<Service | null>(null)
   const [serviceSongs, setServiceSongs] = useState<ServiceSong[]>([])
+  const [serviceMembers, setServiceMembers] = useState<ServiceMember[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddSongModal, setShowAddSongModal] = useState(false)
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false)
+  const [editingMember, setEditingMember] = useState<ServiceMember | null>(null)
   const [isEditingService, setIsEditingService] = useState(false)
   const [editedService, setEditedService] = useState<Service | null>(null)
   const [expandedSongIds, setExpandedSongIds] = useState<Set<string>>(new Set())
@@ -74,6 +92,10 @@ export default function ServiceDetailPage() {
       const data = await SupabaseService.getServiceById(serviceId)
       setService(data)
       setServiceSongs(data.songs || [])
+
+      // Load team members
+      const members = await SupabaseService.getServiceMembers(serviceId)
+      setServiceMembers(members)
     } catch (error) {
       console.error('Error loading service:', error)
     } finally {
@@ -114,6 +136,18 @@ export default function ServiceDetailPage() {
     } catch (error) {
       console.error('Error removing song:', error)
       alert('Failed to remove song')
+    }
+  }
+
+  const handleRemoveMember = async (serviceMemberId: string) => {
+    if (!confirm('Remove this team member from the service?')) return
+
+    try {
+      await SupabaseService.removeMemberFromService(serviceMemberId)
+      setServiceMembers(prev => prev.filter(m => m.id !== serviceMemberId))
+    } catch (error) {
+      console.error('Error removing team member:', error)
+      alert('Failed to remove team member')
     }
   }
 
@@ -421,6 +455,90 @@ export default function ServiceDetailPage() {
         </div>
       </div>
 
+      {/* Team Members Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Team ({serviceMembers.length} {serviceMembers.length === 1 ? 'member' : 'members'})
+          </h2>
+          <button
+            onClick={() => setShowAddMemberModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
+          >
+            <Plus className="w-4 h-4" />
+            Add Team Member
+          </button>
+        </div>
+
+        {serviceMembers.length === 0 ? (
+          <div className="text-center py-12">
+            <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 mb-4">No team members assigned yet</p>
+            <button
+              onClick={() => setShowAddMemberModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Team Member
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {serviceMembers.map((serviceMember) => (
+              <div
+                key={serviceMember.id}
+                className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      {serviceMember.member.name}
+                    </h3>
+
+                    {/* Roles */}
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      {serviceMember.roles.map((role, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-md text-sm font-medium"
+                        >
+                          {role}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Notes */}
+                    {serviceMember.notes && (
+                      <p className="text-sm text-gray-600 dark:text-gray-300 italic mt-2">
+                        📌 {serviceMember.notes}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Edit & Remove Buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingMember(serviceMember)}
+                      className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex-shrink-0"
+                      title="Edit member"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleRemoveMember(serviceMember.id)}
+                      className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex-shrink-0"
+                      title="Remove member"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Songs List */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-6">
@@ -683,6 +801,25 @@ export default function ServiceDetailPage() {
           existingSongIds={serviceSongs.map(s => s.song_id)}
           onClose={() => setShowAddSongModal(false)}
           onSongAdded={loadService}
+        />
+      )}
+
+      {/* Add Team Member Modal */}
+      {showAddMemberModal && (
+        <AddTeamMemberModal
+          serviceId={serviceId}
+          existingMemberIds={serviceMembers.map(m => m.member_id)}
+          onClose={() => setShowAddMemberModal(false)}
+          onMemberAdded={loadService}
+        />
+      )}
+
+      {/* Edit Team Member Modal */}
+      {editingMember && (
+        <EditTeamMemberModal
+          serviceMember={editingMember}
+          onClose={() => setEditingMember(null)}
+          onMemberUpdated={loadService}
         />
       )}
     </div>
