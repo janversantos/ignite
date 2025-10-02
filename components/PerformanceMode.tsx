@@ -44,6 +44,7 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
   const [compactMode, setCompactMode] = useState(false)
   const [showLyrics, setShowLyrics] = useState(false)
   const [showNumbers, setShowNumbers] = useState(true)
+  const [numbersOnly, setNumbersOnly] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
   const [fontSize, setFontSize] = useState<FontSize>('medium')
   const [currentKeys, setCurrentKeys] = useState<Record<number, string>>(
@@ -198,8 +199,8 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
       const lineSpacing = 8 // space-y-2 between lines
 
       // Count lines per section
-      let linesPerSection = 1 // chords line
-      if (showNumbers) linesPerSection += 1 // numbers line
+      let linesPerSection = numbersOnly ? 1 : 1 // chords line (or numbers line if numbersOnly)
+      if (showNumbers && !numbersOnly) linesPerSection += 1 // numbers line (only if showing both)
       if (showLyrics) linesPerSection += 1 // lyrics
       if (showNotes) linesPerSection += 1 // notes
 
@@ -228,7 +229,7 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
     calculateOptimalFontSize()
     window.addEventListener('resize', calculateOptimalFontSize)
     return () => window.removeEventListener('resize', calculateOptimalFontSize)
-  }, [compactMode, currentIndex, chordProgression.length, showLyrics, showNotes, showNumbers])
+  }, [compactMode, currentIndex, chordProgression.length, showLyrics, showNotes, showNumbers, numbersOnly])
 
   const getFontSizeClass = () => {
     switch (fontSize) {
@@ -373,16 +374,26 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
                       {section.section}
                     </h3>
                     <div className="space-y-2">
-                      <p
-                        className={`text-white font-mono leading-relaxed ${compactMode && autoFontSizePx ? '' : getFontSizeClass()}`}
-                        style={compactMode && autoFontSizePx ? { fontSize: `${autoFontSizePx}px` } : undefined}
-                      >
-                        {section.chords}
-                      </p>
-                      {showNumbers && (
+                      {!numbersOnly && (
                         <p
-                          className={`text-primary-500 font-mono ${compactMode && autoFontSizePx ? '' : getNumberSizeClass()}`}
-                          style={compactMode && autoFontSizePx ? { fontSize: `${Math.floor(autoFontSizePx * 0.75)}px` } : undefined}
+                          className={`text-white font-mono leading-relaxed ${compactMode && autoFontSizePx ? '' : getFontSizeClass()}`}
+                          style={compactMode && autoFontSizePx ? { fontSize: `${autoFontSizePx}px` } : undefined}
+                        >
+                          {section.chords}
+                        </p>
+                      )}
+                      {(showNumbers || numbersOnly) && (
+                        <p
+                          className={`${numbersOnly ? 'text-white' : 'text-primary-500'} font-mono ${
+                            numbersOnly
+                              ? (compactMode && autoFontSizePx ? '' : getFontSizeClass())
+                              : (compactMode && autoFontSizePx ? '' : getNumberSizeClass())
+                          }`}
+                          style={
+                            compactMode && autoFontSizePx
+                              ? { fontSize: numbersOnly ? `${autoFontSizePx}px` : `${Math.floor(autoFontSizePx * 0.75)}px` }
+                              : undefined
+                          }
                         >
                           {nashville}
                         </p>
@@ -509,10 +520,26 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
                 <input
                   type="checkbox"
                   checked={showNumbers}
-                  onChange={(e) => setShowNumbers(e.target.checked)}
+                  onChange={(e) => {
+                    setShowNumbers(e.target.checked)
+                    if (!e.target.checked) setNumbersOnly(false)
+                  }}
+                  className="w-4 h-4"
+                  disabled={numbersOnly}
+                />
+                <span className="text-sm">With Nashville Numbers</span>
+              </label>
+              <label className="flex items-center gap-3 text-gray-300 cursor-pointer hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={numbersOnly}
+                  onChange={(e) => {
+                    setNumbersOnly(e.target.checked)
+                    if (e.target.checked) setShowNumbers(false)
+                  }}
                   className="w-4 h-4"
                 />
-                <span className="text-sm">Nashville Numbers</span>
+                <span className="text-sm">Nashville Numbers Only</span>
               </label>
               <label className="flex items-center gap-3 text-gray-300 cursor-pointer hover:text-white">
                 <input
