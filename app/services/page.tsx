@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, User, Search, Plus, ChevronRight } from 'lucide-react'
+import { Calendar, Clock, User, Search, Plus, ChevronRight, ArrowLeft } from 'lucide-react'
 import { SupabaseService } from '@/lib/supabase'
 
 interface Service {
@@ -108,18 +108,29 @@ export default function ServicesPage() {
   return (
     <div className="max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">All Services</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{filteredServices.length} services found</p>
-        </div>
+      <div className="mb-6">
+        {/* Back Button */}
         <button
-          onClick={() => router.push('/')}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
         >
-          <Plus className="w-4 h-4" />
-          New Service
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back</span>
         </button>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">All Services</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">{filteredServices.length} services found</p>
+          </div>
+          <button
+            onClick={() => router.push('/')}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
+          >
+            <Plus className="w-4 h-4" />
+            New Service
+          </button>
+        </div>
       </div>
 
       {/* Filters & Search */}
