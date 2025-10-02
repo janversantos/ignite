@@ -251,7 +251,12 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
       // Vertical swipe
       const isDownSwipe = distanceY < -100 // Swipe down to exit
 
-      if (isDownSwipe) {
+      // Only allow exit if swipe started from top 20% of screen
+      const screenHeight = window.innerHeight
+      const topThreshold = screenHeight * 0.2
+      const startedFromTop = touchStart.y <= topThreshold
+
+      if (isDownSwipe && startedFromTop) {
         handleClose()
       }
     }
@@ -479,7 +484,7 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
       {/* Exit Hint for Mobile */}
       {showExitHint && (
         <div className="bg-primary-600/90 text-white px-4 py-2 text-center text-sm animate-fade-in md:hidden">
-          <span>💡 Swipe down to exit or tap the red X button</span>
+          <span>💡 Swipe down from top to exit or tap the red X button</span>
           <button
             onClick={() => setShowExitHint(false)}
             className="ml-3 text-white/80 hover:text-white"
@@ -655,7 +660,7 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Exit</span>
-                  <span className="text-gray-500 text-xs">Swipe down ↓</span>
+                  <span className="text-gray-500 text-xs">Swipe down from top ↓</span>
                 </div>
               </div>
             </div>
