@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, ChevronLeft, ChevronRight, Settings, Minus, Plus } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Settings, Minus, Plus, List, HelpCircle } from 'lucide-react'
 import { chordProgressionToNumbers } from '@/utils/numberSystem'
 import { transposeChordProgression, getAllKeys } from '@/utils/chordTransposer'
 
@@ -39,6 +39,8 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [showSettings, setShowSettings] = useState(false)
+  const [showJumpMenu, setShowJumpMenu] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
   const [showLyrics, setShowLyrics] = useState(false)
   const [showNumbers, setShowNumbers] = useState(true)
@@ -55,20 +57,44 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
   // Arrow key navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
+      // Don't trigger if user is in an input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) {
+        return
+      }
+
+      // Navigation
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         e.preventDefault()
         goToNext()
-      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
         e.preventDefault()
         goToPrevious()
       } else if (e.key === 'Escape') {
-        onClose()
+        if (showJumpMenu || showHelp || showSettings) {
+          setShowJumpMenu(false)
+          setShowHelp(false)
+          setShowSettings(false)
+        } else {
+          onClose()
+        }
+      } else if (e.key.toLowerCase() === 'j') {
+        e.preventDefault()
+        setShowJumpMenu(!showJumpMenu)
+      } else if (e.key === '?' || e.key.toLowerCase() === 'h') {
+        e.preventDefault()
+        setShowHelp(!showHelp)
+      } else if (e.key >= '1' && e.key <= '9') {
+        const index = parseInt(e.key) - 1
+        if (index < songs.length) {
+          e.preventDefault()
+          jumpToSong(index)
+        }
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentIndex, songs.length])
+  }, [currentIndex, songs.length, showJumpMenu, showHelp, showSettings])
 
   // Touch/Swipe handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -106,6 +132,11 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1)
     }
+  }
+
+  const jumpToSong = (index: number) => {
+    setCurrentIndex(index)
+    setShowJumpMenu(false)
   }
 
   const getSemitonesDifference = (fromKey: string, toKey: string) => {
@@ -193,20 +224,44 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
             ))}
           </select>
 
+          {/* Jump Button */}
+          <button
+            onClick={() => setShowJumpMenu(!showJumpMenu)}
+            className={`p-2 rounded-lg transition-colors ${
+              showJumpMenu ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
+            }`}
+            title="Jump to song (J)"
+          >
+            <List className="w-5 h-5" />
+          </button>
+
           {/* Settings Button */}
           <button
             onClick={() => setShowSettings(!showSettings)}
             className={`p-2 rounded-lg transition-colors ${
               showSettings ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
             }`}
+            title="Settings"
           >
             <Settings className="w-5 h-5" />
+          </button>
+
+          {/* Help Button */}
+          <button
+            onClick={() => setShowHelp(!showHelp)}
+            className={`p-2 rounded-lg transition-colors ${
+              showHelp ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
+            }`}
+            title="Keyboard shortcuts (?)"
+          >
+            <HelpCircle className="w-5 h-5" />
           </button>
 
           {/* Close Button */}
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors"
+            title="Exit (ESC)"
           >
             <X className="w-6 h-6" />
           </button>
@@ -285,6 +340,74 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
             )}
           </div>
         </div>
+
+        {/* Quick Jump Menu */}
+        {showJumpMenu && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-2xl w-80 max-w-[90vw] z-20">
+            <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+              <List className="w-4 h-4" />
+              Jump to Song
+            </h3>
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+              {songs.map((songData, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => jumpToSong(idx)}
+                  className={`w-full text-left p-3 rounded-lg transition-colors ${
+                    idx === currentIndex
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-bold">{idx + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">{songData.song.title}</p>
+                      <p className="text-xs opacity-75">Key: {songData.key}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <p className="text-gray-500 text-xs mt-3">Press 1-9 or click to jump</p>
+          </div>
+        )}
+
+        {/* Help Overlay */}
+        {showHelp && (
+          <div className="absolute top-4 right-4 bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-2xl w-80 max-w-[90vw] z-20">
+            <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              Keyboard Shortcuts
+            </h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Next Song</span>
+                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">→ / Space / PgDn</code>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Previous Song</span>
+                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">← / Bksp / PgUp</code>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Jump to Song</span>
+                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">J / 1-9</code>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Help</span>
+                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">H / ?</code>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Exit</span>
+                <code className="bg-gray-800 px-2 py-1 rounded text-gray-200">ESC</code>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-gray-700">
+              <p className="text-gray-400 text-xs mb-2">🎹 Foot Pedal Support</p>
+              <p className="text-gray-500 text-xs">PageUp/PageDown keys work with Bluetooth foot pedals (AirTurn, etc.)</p>
+            </div>
+          </div>
+        )}
 
         {/* Settings Panel */}
         {showSettings && (
