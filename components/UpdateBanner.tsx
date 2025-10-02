@@ -36,12 +36,18 @@ export function UpdateBanner() {
 
   const handleReload = () => {
     setIsReloading(true)
-    // Clear all caches and reload
+
+    // Clear localStorage
+    localStorage.clear()
+
+    // Clear all service worker caches
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => caches.delete(name))
       })
     }
+
+    // Force reload
     window.location.reload()
   }
 
