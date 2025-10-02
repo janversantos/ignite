@@ -39,7 +39,7 @@
 - Static JSON files - **Songs only** (data/songs.json)
 
 ### **Database:**
-- **Supabase (PostgreSQL)** - Services and service_songs tables
+- **Supabase (PostgreSQL)** - Services, service_songs, and team_members tables
 - **JSON files** - Songs data (version controlled in git)
 
 ### **Hosting:**
@@ -168,7 +168,19 @@ CREATE TABLE service_songs (
   service_id UUID REFERENCES services(id) ON DELETE CASCADE,
   song_id TEXT NOT NULL, -- References JSON songs by ID
   order_index INT NOT NULL,
-  key TEXT, -- Override key for this service
+  key TEXT, -- Override key for this service (persisted)
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### **team_members table:**
+```sql
+CREATE TABLE team_members (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  service_id UUID REFERENCES services(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  roles TEXT[] NOT NULL, -- Array of roles (Worship Leader, Vocals, Guitar, etc.)
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -200,12 +212,37 @@ CREATE TABLE service_songs (
 - Admin bulk view for quick edits
 - Import from URL
 
-### **✅ Supabase Integration (NEW):**
+### **✅ Supabase Integration:**
 - Service CRUD methods ready
 - Song-to-service linking
 - Reordering functionality
-- Key override per service
+- Key override per service (persisted to database)
+- Team members management
 - SQL schema prepared
+
+### **✅ Performance Mode:**
+- Fullscreen support with cross-browser compatibility
+- Swipe gestures for navigation (left/right for songs, down from top to exit)
+- Keyboard shortcuts (arrow keys, PageUp/PageDown for foot pedal)
+- Quick transpose with worship leader keys
+- Display modes:
+  - Compact mode with auto-fit font scaling
+  - Show/hide lyrics
+  - Nashville Numbers (with/only)
+  - Show/hide notes
+  - Font size controls (S/M/L)
+- Quick jump to any song (J key or List icon)
+- Help overlay (? or H key)
+- Mobile-optimized with touch-friendly controls
+
+### **✅ Nashville Number System:**
+- Converts chords to scale degrees (1-7)
+- Handles slash chords (G/B → 5/7)
+- Handles complex chords with note suffixes (C-D → 3-4)
+- Two display modes:
+  - "With Nashville Numbers" (chords + numbers)
+  - "Nashville Numbers Only" (numbers only, same font size)
+- Accurate conversion of all note names in chord structures
 
 ### **🔄 Dashboard Homepage (Pending):**
 - Quick stats (total songs, most used key, leaders)
@@ -404,8 +441,14 @@ SupabaseService.deleteService(id)
 // Service Songs
 SupabaseService.addSongToService(serviceSong)
 SupabaseService.removeSongFromService(id)
-SupabaseService.updateServiceSong(id, updates)
+SupabaseService.updateServiceSong(id, updates) // Includes key persistence
 SupabaseService.reorderServiceSongs(songs)
+
+// Team Members
+SupabaseService.getTeamMembers(serviceId)
+SupabaseService.addTeamMember(teamMember)
+SupabaseService.updateTeamMember(id, updates)
+SupabaseService.deleteTeamMember(id)
 ```
 
 ---
@@ -440,16 +483,35 @@ SupabaseService.reorderServiceSongs(songs)
 
 ## 12. Known Issues / Pending Tasks
 
-### **✅ Completed (Latest Session - Oct 1, 2025):**
+### **✅ Completed (Latest Session - Oct 2, 2025):**
+- ✅ Performance Mode with fullscreen support (v1.0.10-1.0.13)
+  - Auto-fit font scaling in compact mode
+  - Swipe gestures (left/right for navigation, down from top to exit)
+  - Mobile exit controls with red X button
+  - Fullscreen API with cross-browser support
+- ✅ Nashville Number System enhancements (v1.0.10-1.0.11)
+  - Fixed slash chord conversion (G/B → 5/7, not 5/Bm)
+  - Fixed note suffix conversion (C-D → 3-4, not 3-D)
+  - Added "Nashville Numbers Only" display mode
+- ✅ Service song key persistence to database (v1.0.12)
+  - Keys now persist across page refreshes
+  - Database automatically saves transposed keys
+- ✅ Team members management (v1.0.12)
+  - Add/edit/delete team members
+  - Multiple roles per member
+  - Grouped display by role
+- ✅ Mobile gesture improvements (v1.0.13)
+  - Exit gesture only triggers from top 20% of screen
+  - Prevents accidental exits while scrolling
+- ✅ Documentation updates (ADMIN-GUIDE.md, MEGA-CONTEXT-PACK.md)
+
+### **✅ Previously Completed (Oct 1, 2025):**
 - ✅ View mode toggle (Full/Compact/Chords Only) on song detail page
 - ✅ Chords only view optimization (vertical layout)
 - ✅ Multi-line chord editing with "+ Line" button
 - ✅ Service information editing functionality
 - ✅ Song clickability in service detail page
 - ✅ Sort options added to all pages (A-Z, Newest First)
-  - /songs page
-  - /admin/songs page
-  - Home page (Most Popular Songs)
 - ✅ Fixed hydration mismatch error on home page
 - ✅ Fixed transpose dropdown (removed duplicate keys)
 - ✅ Created .gitignore file for deployment
@@ -618,7 +680,12 @@ Services:
 - [x] View mode toggle (Full/Compact/Chords Only)
 - [x] Sort options on all pages
 - [x] Multi-line chord editing
-- [ ] Deployed to Vercel (Ready)
+- [x] Performance Mode with fullscreen
+- [x] Nashville Number System
+- [x] Service song key persistence
+- [x] Team members management
+- [x] Mobile gesture controls
+- [x] Deployed to Vercel
 - [x] Supabase connected
 
 ---
@@ -695,9 +762,11 @@ git push origin main  # Auto-deploys via Vercel
 
 ---
 
-**Last Updated:** October 1, 2025
-**Current Phase:** Phase 1 Complete - Ready for Deployment
-**Next Milestone:** Deploy to Vercel and test production
+**Last Updated:** October 2, 2025
+**Current Version:** 1.0.13
+**Current Phase:** Phase 1 Complete - Deployed and Active
+**Live URL:** https://ignite-gray.vercel.app
+**Next Milestone:** Phase 2 - Migrate songs to database for multi-user editing
 
 ---
 
