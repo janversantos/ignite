@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Navbar } from '@/components/Navbar'
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
+import { UpdateBanner } from '@/components/UpdateBanner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -44,6 +45,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <ServiceWorkerRegistration />
+          <UpdateBanner />
           <Navbar />
           <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
             <div className="max-w-7xl mx-auto px-4 py-8">
