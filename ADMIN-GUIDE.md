@@ -17,6 +17,7 @@
   - Edit title, artist, key
   - Add/remove sections
   - Edit chords and lyrics
+  - **Reorder sections**: Use ↑ ↓ arrows to move sections up/down
   - Save or cancel changes
 - **Delete**: Remove songs permanently
 
@@ -131,8 +132,14 @@ Then restart the dev server.
    git commit -m "Update songs: [describe changes]"
    git push origin main
 
-6. Vercel auto-deploys in ~1-2 minutes
-   Visit https://ignite-gray.vercel.app
+6. Update version (for auto-update banner):
+   Edit public/version.json → increment version number
+   git add public/version.json
+   git commit -m "Bump version to 1.0.X"
+   git push origin main
+
+7. Vercel auto-deploys in ~1-2 minutes
+   Users see update banner → tap reload → get fresh version
 ```
 
 ### **Option 2: Edit via Admin Panel (For Single Songs)**
@@ -146,7 +153,8 @@ Then restart the dev server.
    npm run dev
    Check http://localhost:3000/songs
 6. Deploy → git add, commit, push
-7. Done! → Vercel auto-deploys in ~1-2 minutes
+7. Update version → Edit public/version.json, increment version
+8. Done! → Vercel auto-deploys, users get update banner
 ```
 
 ## 🎯 Tips
@@ -156,6 +164,29 @@ Then restart the dev server.
 - **Search**: Works in both editors
 - **Logout**: Always logout when done for security
 - **Backup**: Download JSON regularly as backup
+- **Version Updates**: Always increment version number after deploying changes so users get the update banner
+
+## 🔄 Auto-Update System
+
+The app includes an auto-update detection system:
+
+- Checks for new version every 30 seconds
+- Shows blue banner when update is available
+- Users tap "Reload" to get latest version
+- Clears cache automatically on reload
+
+**To trigger update banner:**
+1. Make your changes and deploy
+2. Update `public/version.json`:
+   ```json
+   {
+     "version": "1.0.2",  // Increment this
+     "timestamp": "2025-10-01T16:00:00Z",
+     "commit": "abc1234"
+   }
+   ```
+3. Commit and push
+4. After 30 seconds, users see update banner
 
 ## 🔗 Quick Links
 
