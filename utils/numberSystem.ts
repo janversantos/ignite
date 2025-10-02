@@ -13,11 +13,30 @@ export function chordToNumber(chord: string, key: string): string {
   if (!chordMatch) return chord
 
   let rootNote = chordMatch[1]
-  const suffix = chordMatch[2]
+  let suffix = chordMatch[2]
+
+  // Check if there's a slash chord (e.g., "G/Bm")
+  let bassNote = ''
+  let bassSuffix = ''
+  if (suffix.includes('/')) {
+    const slashParts = suffix.split('/')
+    suffix = slashParts[0] // Chord quality before slash
+    const bassChord = slashParts[1] // Bass note after slash
+
+    // Parse the bass note
+    const bassMatch = bassChord.match(/^([A-G][#b]?)(.*)$/)
+    if (bassMatch) {
+      bassNote = bassMatch[1]
+      bassSuffix = bassMatch[2]
+    }
+  }
 
   // Convert flats to sharps for consistency
   if (rootNote in flatToSharp) {
     rootNote = flatToSharp[rootNote]
+  }
+  if (bassNote && bassNote in flatToSharp) {
+    bassNote = flatToSharp[bassNote]
   }
 
   let keyNote = key
@@ -61,6 +80,27 @@ export function chordToNumber(chord: string, key: string): string {
     finalNumber = numberNotation + 'm'
   } else if (suffix) {
     finalNumber = numberNotation + suffix
+  }
+
+  // Handle bass note conversion if present
+  if (bassNote) {
+    const bassIndex = notes.indexOf(bassNote)
+    if (bassIndex !== -1) {
+      let bassDegree = bassIndex - keyIndex
+      if (bassDegree < 0) bassDegree += 12
+
+      const bassNumberNotation = degreeMap[bassDegree] || '?'
+      let finalBassNumber = bassNumberNotation
+
+      // Check if bass note is minor
+      if (bassSuffix.startsWith('m') && !bassSuffix.startsWith('maj')) {
+        finalBassNumber = bassNumberNotation + 'm'
+      } else if (bassSuffix) {
+        finalBassNumber = bassNumberNotation + bassSuffix
+      }
+
+      finalNumber = finalNumber + '/' + finalBassNumber
+    }
   }
 
   return finalNumber

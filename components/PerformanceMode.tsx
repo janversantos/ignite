@@ -49,6 +49,7 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
   const [currentKeys, setCurrentKeys] = useState<Record<number, string>>(
     songs.reduce((acc, song, idx) => ({ ...acc, [idx]: song.key }), {})
   )
+  const [autoFontSizePx, setAutoFontSizePx] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const currentSong = songs[currentIndex]
@@ -167,6 +168,67 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
   }
 
   const chordProgression = getChordProgression(currentSong.song, currentKey)
+
+  // Auto-fit font scaling for compact mode
+  useEffect(() => {
+    if (!compactMode || !containerRef.current) {
+      setAutoFontSizePx(null)
+      return
+    }
+
+    const calculateOptimalFontSize = () => {
+      const viewportHeight = window.innerHeight
+      const headerHeight = 60
+      const footerHeight = 80
+      const verticalPadding = 48 // p-6 top and bottom
+      const titleSectionHeight = 160 // title + artist + worship leaders
+
+      const availableHeight = viewportHeight - headerHeight - footerHeight - verticalPadding - titleSectionHeight
+
+      const sectionCount = chordProgression.length
+      if (sectionCount === 0) {
+        setAutoFontSizePx(null)
+        return
+      }
+
+      // Calculate space needed for sections (excluding text content)
+      const sectionSpacing = 12 // space-y-3 between sections
+      const sectionPadding = 32 // p-4 per section
+      const sectionTitleHeight = 24 // section name
+      const lineSpacing = 8 // space-y-2 between lines
+
+      // Count lines per section
+      let linesPerSection = 1 // chords line
+      if (showNumbers) linesPerSection += 1 // numbers line
+      if (showLyrics) linesPerSection += 1 // lyrics
+      if (showNotes) linesPerSection += 1 // notes
+
+      // Total fixed height for all sections
+      const totalSectionOverhead = sectionCount * (sectionPadding + sectionTitleHeight) + (sectionCount - 1) * sectionSpacing
+      const totalLineSpacing = sectionCount * ((linesPerSection - 1) * lineSpacing)
+
+      // Remaining height for text content
+      const remainingHeight = availableHeight - totalSectionOverhead - totalLineSpacing
+
+      // Total lines across all sections
+      const totalLines = sectionCount * linesPerSection
+
+      // Height per line
+      const heightPerLine = remainingHeight / totalLines
+
+      // Font size calculation (accounting for line-height of 1.5)
+      const lineHeightRatio = 1.5
+      const fontSize = Math.floor(heightPerLine / lineHeightRatio)
+
+      // Clamp between 14px and 48px for readability
+      const clampedFontSize = Math.max(14, Math.min(48, fontSize))
+      setAutoFontSizePx(clampedFontSize)
+    }
+
+    calculateOptimalFontSize()
+    window.addEventListener('resize', calculateOptimalFontSize)
+    return () => window.removeEventListener('resize', calculateOptimalFontSize)
+  }, [compactMode, currentIndex, chordProgression.length, showLyrics, showNotes, showNumbers])
 
   const getFontSizeClass = () => {
     switch (fontSize) {
@@ -311,11 +373,17 @@ export function PerformanceMode({ songs, onClose }: PerformanceModeProps) {
                       {section.section}
                     </h3>
                     <div className="space-y-2">
-                      <p className={`text-white font-mono leading-relaxed ${getFontSizeClass()}`}>
+                      <p
+                        className={`text-white font-mono leading-relaxed ${compactMode && autoFontSizePx ? '' : getFontSizeClass()}`}
+                        style={compactMode && autoFontSizePx ? { fontSize: `${autoFontSizePx}px` } : undefined}
+                      >
                         {section.chords}
                       </p>
                       {showNumbers && (
-                        <p className={`text-primary-500 font-mono ${getNumberSizeClass()}`}>
+                        <p
+                          className={`text-primary-500 font-mono ${compactMode && autoFontSizePx ? '' : getNumberSizeClass()}`}
+                          style={compactMode && autoFontSizePx ? { fontSize: `${Math.floor(autoFontSizePx * 0.75)}px` } : undefined}
+                        >
                           {nashville}
                         </p>
                       )}

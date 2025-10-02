@@ -95,10 +95,10 @@
       "sections": [
         {
           "id": "section_1759373055087",
-          "name": "New Section",
+          "name": "Intro",
           "order": 1,
-          "chords": "Intro",
-          "snippet": "Dm  F  C  C",
+          "chords": "Dm  F  C  C",
+          "snippet": "",
           "notes": ""
         },
         {
@@ -2113,5 +2113,5 @@
       "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-02T02:44:29.317Z"
+  "lastUpdated": "2025-10-02T04:28:06.503Z"
 }
