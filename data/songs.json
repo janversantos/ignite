@@ -26,9 +26,17 @@
       ],
       "sections": [
         {
+          "id": "section_1759373022835",
+          "name": "Intro",
+          "order": 1,
+          "chords": "G  Em  D  C",
+          "snippet": "",
+          "notes": ""
+        },
+        {
           "id": "section_1759299750196_0",
           "name": "Verse 1",
-          "order": 1,
+          "order": 2,
           "chords": "G  Em  D  C",
           "snippet": "All my words fall short",
           "notes": ""
@@ -36,7 +44,7 @@
         {
           "id": "section_1759299750196_2",
           "name": "Chorus",
-          "order": 2,
+          "order": 3,
           "chords": "G  D  Em  C-D x2",
           "snippet": "So I throw up my hands and praise You again and again",
           "notes": ""
@@ -44,7 +52,7 @@
         {
           "id": "section_1759299750196_5",
           "name": "Bridge",
-          "order": 3,
+          "order": 4,
           "chords": "G\nG  D  Em  C-D",
           "snippet": "So come on, my soul",
           "notes": ""
@@ -52,7 +60,7 @@
         {
           "id": "section_1759299750196_6",
           "name": "Last Chorus",
-          "order": 4,
+          "order": 5,
           "chords": "G  Dm  C  Cm  x2",
           "snippet": "So I throw up my hands and praise You again and again",
           "notes": ""
@@ -86,9 +94,17 @@
       ],
       "sections": [
         {
+          "id": "section_1759373055087",
+          "name": "New Section",
+          "order": 1,
+          "chords": "Intro",
+          "snippet": "Dm  F  C  C",
+          "notes": ""
+        },
+        {
           "id": "section_1759299439856_0",
           "name": "Chorus",
-          "order": 1,
+          "order": 2,
           "chords": "Dm  F  C  C x2",
           "snippet": "I'm caught up in Your presence",
           "notes": ""
@@ -96,7 +112,7 @@
         {
           "id": "section_1759299439856_1",
           "name": "Verse",
-          "order": 2,
+          "order": 3,
           "chords": "F C x2",
           "snippet": "I'm sorry when I've just gone through the motions",
           "notes": ""
@@ -104,7 +120,7 @@
         {
           "id": "section_1759299439856_2",
           "name": "Bridge",
-          "order": 3,
+          "order": 4,
           "chords": "Dm  F  Am  G",
           "snippet": "I just want You, Nothing else, nothing else",
           "notes": ""
@@ -2097,5 +2113,5 @@
       "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-01T15:54:56.420Z"
+  "lastUpdated": "2025-10-02T02:44:29.317Z"
 }
