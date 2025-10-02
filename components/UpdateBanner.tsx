@@ -14,7 +14,7 @@ export function UpdateBanner() {
     // Check for updates every 30 seconds
     const checkForUpdates = async () => {
       try {
-        const response = await fetch('/version.json?t=' + Date.now())
+        const response = await fetch('/api/version?t=' + Date.now())
         const data = await response.json()
 
         if (currentVersion && currentVersion !== data.version) {
@@ -49,7 +49,7 @@ export function UpdateBanner() {
     setShowBanner(false)
     // Update the stored version to stop showing banner
     try {
-      const response = await fetch('/version.json?t=' + Date.now())
+      const response = await fetch('/api/version?t=' + Date.now())
       const data = await response.json()
       localStorage.setItem('app_version', data.version)
     } catch (error) {

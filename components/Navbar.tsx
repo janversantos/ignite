@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
+import { APP_VERSION } from '@/lib/version'
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -43,6 +44,7 @@ export function Navbar() {
             </a>
             <div className="h-6 w-px bg-white/20"></div>
             <ThemeToggle />
+            <div className="text-xs text-white/60 font-mono">v{APP_VERSION}</div>
           </div>
 
           {/* Mobile Menu Button & Theme Toggle */}
@@ -82,6 +84,9 @@ export function Navbar() {
             >
               Admin
             </a>
+            <div className="pt-2 border-t border-white/20">
+              <div className="px-3 py-2 text-xs text-white/60 font-mono">Version {APP_VERSION}</div>
+            </div>
           </div>
         )}
       </div>

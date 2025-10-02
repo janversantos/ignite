@@ -133,9 +133,10 @@ Then restart the dev server.
    git push origin main
 
 6. Update version (for auto-update banner):
-   Edit public/version.json → increment version number
-   git add public/version.json
-   git commit -m "Bump version to 1.0.X"
+   Edit lib/version.ts → increment APP_VERSION
+   Example: export const APP_VERSION = '1.0.4'
+   git add lib/version.ts
+   git commit -m "Bump version to 1.0.4"
    git push origin main
 
 7. Vercel auto-deploys in ~1-2 minutes
@@ -153,7 +154,7 @@ Then restart the dev server.
    npm run dev
    Check http://localhost:3000/songs
 6. Deploy → git add, commit, push
-7. Update version → Edit public/version.json, increment version
+7. Update version → Edit lib/version.ts, increment APP_VERSION
 8. Done! → Vercel auto-deploys, users get update banner
 ```
 
@@ -177,16 +178,18 @@ The app includes an auto-update detection system:
 
 **To trigger update banner:**
 1. Make your changes and deploy
-2. Update `public/version.json`:
-   ```json
-   {
-     "version": "1.0.2",  // Increment this
-     "timestamp": "2025-10-01T16:00:00Z",
-     "commit": "abc1234"
-   }
+2. Update `lib/version.ts`:
+   ```typescript
+   export const APP_VERSION = '1.0.4'  // Increment this
+   export const APP_BUILD_DATE = '2025-10-02'
+   export const APP_NAME = 'Ignite Chords'
    ```
-3. Commit and push
+3. Commit and push (changing .ts file triggers Vercel rebuild)
 4. After 30 seconds, users see update banner
+
+**Version is also displayed:**
+- Desktop: Navbar (top right) shows "v1.0.4"
+- Mobile: Menu → bottom shows "Version 1.0.4"
 
 ## 🔗 Quick Links
 

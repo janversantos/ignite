@@ -9,11 +9,26 @@ export default function Home() {
     <>
       <div className="mb-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 dark:from-primary-400 dark:to-purple-400 bg-clip-text text-transparent mb-4">
-            Welcome to Ignite Chords
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Manage your worship songs, keys, and chord progressions with ease
+          {/* App Icon and Title */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <img
+              src="/icon-192.png"
+              alt="Ignite Chords"
+              className="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-lg"
+            />
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary-600 via-purple-600 to-blue-600 dark:from-primary-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+              Ignite Chords
+            </h1>
+          </div>
+
+          {/* Tagline */}
+          <p className="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
+            Worship Songs & Chord Management
+          </p>
+
+          {/* Features */}
+          <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+            Transpose • Setlists • Keys • Teams
           </p>
         </div>
       </div>
