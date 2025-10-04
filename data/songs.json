@@ -11,7 +11,7 @@
       "worshipLeaders": [
         {
           "name": "YANNAH",
-          "preferredKey": "D"
+          "preferredKey": "C#"
         }
       ],
       "structure": [
@@ -82,7 +82,7 @@
       "worshipLeaders": [
         {
           "name": "Jan",
-          "preferredKey": "A#"
+          "preferredKey": "A"
         }
       ],
       "structure": [
@@ -2113,5 +2113,5 @@
       "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-02T07:51:27.591Z"
+  "lastUpdated": "2025-10-04T08:05:28.547Z"
 }

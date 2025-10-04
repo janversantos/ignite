@@ -48,3 +48,13 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+
+# md
+*.md
+
+# sql
+*.sql
+
+# xlsx
+*.xlsx
