@@ -45,7 +45,7 @@
           "id": "section_1759299750196_2",
           "name": "Chorus",
           "order": 3,
-          "chords": "G  D  Em  C-D x2",
+          "chords": "G  D  Em  C - D x2",
           "snippet": "So I throw up my hands and praise You again and again",
           "notes": ""
         },
@@ -53,7 +53,7 @@
           "id": "section_1759299750196_5",
           "name": "Bridge",
           "order": 4,
-          "chords": "G\nG  D  Em  C-D",
+          "chords": "G\nG  D  Em  C - D",
           "snippet": "So come on, my soul",
           "notes": ""
         },
@@ -167,7 +167,7 @@
           "id": "section_1759298473265_0",
           "name": "Verse",
           "order": 2,
-          "chords": "C F Am-G C",
+          "chords": "C F Am - G C",
           "snippet": "Through You the blind will see",
           "notes": ""
         },
@@ -175,7 +175,7 @@
           "id": "section_1759298473265_1",
           "name": "Chorus",
           "order": 3,
-          "chords": "C F Am-G C",
+          "chords": "C F Am - G C",
           "snippet": "I am free to run",
           "notes": ""
         },
@@ -255,7 +255,7 @@
           "id": "section_1759298005109_7",
           "name": "Bridge",
           "order": 5,
-          "chords": "G  C  G  D\nG  C  Em-D-C",
+          "chords": "G  C  G  D\nG  C  Em - D - C",
           "snippet": "You've turned my sadness into gladness",
           "notes": ""
         }
@@ -2113,5 +2113,5 @@
       "songType": "Moderate"
     }
   ],
-  "lastUpdated": "2025-10-04T08:05:28.547Z"
+  "lastUpdated": "2025-10-04T08:18:10.829Z"
 }
